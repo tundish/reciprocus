@@ -1,5 +1,5 @@
 [project]
-name = "sagids"
+name = "reciprocus"
 dynamic = ["version"]
 description = "Routines for Reciprocal Physics"
 readme = "README.md"
