@@ -22,6 +22,10 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+viz = [
+    "pyglet",
+    "vispy",
+]
 
 [project.urls]
 
