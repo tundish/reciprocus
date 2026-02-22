@@ -3,6 +3,7 @@ from fractions import Fraction as F
 from numbers import Number
 import unittest
 
+# TODO Cross-ratio invariant in projective geometry.
 
 @dataclasses.dataclass
 class Result:
