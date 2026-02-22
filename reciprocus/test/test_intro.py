@@ -1,6 +1,6 @@
 import dataclasses
 from fractions import Fraction as F
-import numbers
+from numbers import Number
 import unittest
 
 
@@ -11,7 +11,14 @@ class Result:
     units: list = dataclasses.field(default_factory=list)
 
 
+def conjugate(val: Number):
+    "N units of motion in time are equivalent to minus 1 / N units of motion in space."
+    return - 1 / val
+
+
 class ScalarTests(unittest.TestCase):
 
     def test_defs(self):
-        self.fail()
+        c = complex(1.8)
+        print(c.conjugate())
+        print(conjugate(c))
