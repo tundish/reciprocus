@@ -58,3 +58,4 @@ Quaternions
 
 (Euler vs Hamilton)[https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles#Quaternion_to_Euler_angles_conversion]
 (Euler-Rodrigues)[https://en.wikipedia.org/wiki/Rotations_in_4-dimensional_Euclidean_space]
+(Rodrigues)[https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula]
