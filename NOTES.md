@@ -1,3 +1,6 @@
+Symbols
+=======
+
 From [RS2 Forum]https://reciprocal.systems/phpBB3/viewtopic.php?t=553)
 
 Linear, linear velocity
@@ -49,3 +52,8 @@ Solid: ☷ Earth
 Liquid: ☶ Mountain (snow), ☵ Water (rain), ☳ Thunder (downpour)
 Vapor: ☴ Wind (cloud), ☲ Fire (plasma), ☱ Lake (fog)
 Gas: ☰ Heaven
+
+Quaternions
+===========
+
+(Euler vs Hamilton)[https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles#Quaternion_to_Euler_angles_conversion]
