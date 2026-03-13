@@ -20,6 +20,7 @@
 from __future__ import annotations  # Until Python 3.14 is everywhere
 
 import math
+from numbers import Number
 
 
 class Coordinates(tuple):
@@ -57,7 +58,7 @@ class Coordinates(tuple):
         return "< {0} >".format(", ".join(f"{i}" for i in self))
 
     @staticmethod
-    def intercept(origin: Component, transit: Component, point: Component) -> Component:
+    def intercept(origin: Coordinates, transit: Coordinates, point: Coordinates) -> Coordinates:
         "Find the normal intercept from a point to a line between origin and transit"
         try:
             shadow = (point - origin).unity.dot((transit - origin).unity) * abs(point - origin)
@@ -72,5 +73,15 @@ class Coordinates(tuple):
         except ZeroDivisionError:
             return self
 
-    def dot(self, other):
+    def dot(self, other) -> Number:
         return math.sumprod(self, other)
+
+    def cross(self, other) -> Coordinates:
+        try:
+            i = self[1] * other[2] - self[2] * other[1]
+            j = self[2] * other[0] - self[0] * other[2]
+            k = self[0] * other[1] - self[1] * other[0]
+            return Coordinates(i, j, k)
+        except IndexError:
+            # Works in 3D only.
+            raise NotImplementedError

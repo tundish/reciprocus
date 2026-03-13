@@ -165,6 +165,13 @@ class CoordinatesTests(unittest.TestCase):
             0
         )
 
+    def test_cross_int(self):
+        """ Hill and Kelley 3rd Ed., example 4.4.3 """
+        self.assertEqual(
+            Coordinates(1, 3, -2).cross(Coordinates(0, 2, 2)),
+            Coordinates(10, -2, 2)
+        )
+
     def test_intercept_steps(self):
         # Drop a normal on to a line and measure distance
         a = Coordinates(1, 3)
