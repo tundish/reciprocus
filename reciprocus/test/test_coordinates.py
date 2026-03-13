@@ -166,7 +166,7 @@ class CoordinatesTests(unittest.TestCase):
         )
 
     def test_cross_int(self):
-        """ Hill and Kelley 3rd Ed., example 4.4.3 """
+        # Hill and Kelley 3rd Ed., example 4.4.3
         self.assertEqual(
             Coordinates(1, 3, -2).cross(Coordinates(0, 2, 2)),
             Coordinates(10, -2, 2)
