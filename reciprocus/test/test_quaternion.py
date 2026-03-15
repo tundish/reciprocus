@@ -31,7 +31,7 @@ class APITests(unittest.TestCase):
 
     def test_array_namespace(self):
         self.assertIsInstance(getattr(Q, "__array_namespace__", None), Callable)
-        xp = Q.__array_namespace__(api_version="2020.10")
+        xp = Q.__array_namespace__(api_version="2025.12")
 
 
 class QuaternionTests(unittest.TestCase):
