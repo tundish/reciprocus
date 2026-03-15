@@ -104,3 +104,89 @@ import enum
 class DeviceType(enum.StrEnum):
     CPU = enum.auto()
     GPU = enum.auto()
+
+
+class ArrayType:
+
+    # https://data-apis.org/array-api/latest/API_specification/array_object.html#arithmetic-operators
+
+    def __pos__(self):
+        """
+        +x
+
+        operator.pos(x)
+
+        """
+        raise NotImplementedError
+
+    def __neg__(self):
+        """
+        -x
+
+        operator.neg(x)
+
+        """
+        raise NotImplementedError
+
+    def __add__(self, x):
+        """
+        x1 + x2
+
+        operator.add(x1, x2)
+
+        """
+        raise NotImplementedError
+
+    def __sub__(self, x):
+        """
+        x1 - x2
+
+        operator.sub(x1, x2)
+
+        """
+        raise NotImplementedError
+
+    def __mul__(self, x):
+        """
+        x1 * x2
+
+        operator.mul(x1, x2)
+
+        """
+        raise NotImplementedError
+
+    def __truediv__(self, x):
+        """
+        x1 / x2
+
+        operator.truediv(x1, x2)
+
+        """
+        raise NotImplementedError
+
+    def __floordiv__(self, x):
+        """
+        x1 // x2
+
+        operator.floordiv(x1, x2)
+
+        """
+        raise NotImplementedError
+
+    def __mod__(self, x):
+        """
+        x1 % x2
+
+        operator.mod(x1, x2)
+
+        """
+        raise NotImplementedError
+
+    def __pow__(self, x):
+        """
+        x1 ** x2
+
+        operator.pow(x1, x2)
+
+        """
+        raise NotImplementedError
