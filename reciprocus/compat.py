@@ -97,3 +97,10 @@ DLPack
 
 There may be other reasons why it is not possible or desirable for an implementation to materialize the array as strided data in memory. In such cases, the implementation may raise a BufferError in the __dlpack__ or __dlpack_device__ method. In case an implementation is never able to export its array data via DLPack, it may omit __dlpack__ and __dlpack_device__ completely, and hence from_dlpack may raise an AttributeError.
 """
+
+import enum
+
+
+class DeviceType(enum.StrEnum):
+    CPU = enum.auto()
+    GPU = enum.auto()
