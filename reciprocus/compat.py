@@ -106,7 +106,7 @@ class DeviceType(enum.StrEnum):
     GPU = enum.auto()
 
 
-class ArrayType:
+class ArrayInterface:
 
     # https://data-apis.org/array-api/latest/API_specification/array_object.html#arithmetic-operators
 
@@ -257,4 +257,67 @@ class ArrayType:
 
         """
         raise NotImplementedError
+
+    # https://data-apis.org/array-api/latest/API_specification/array_object.html#comparison-operators
+
+    def __lt__(self, x):
+        """
+        x1 < x2
+
+        operator.lt(x1, x2)
+
+        """
+        raise NotImplementedError
+
+    def __le__(self, x):
+        """
+        x1 <= x2
+
+        operator.le(x1, x2)
+
+        """
+        raise NotImplementedError
+
+    def __gt__(self, x):
+        """
+        x1 > x2
+
+        operator.gt(x1, x2)
+
+        """
+        raise NotImplementedError
+
+    def __ge__(self, x):
+        """
+        x1 >= x2
+
+        operator.ge(x1, x2)
+
+        """
+        raise NotImplementedError
+
+    def __eq__(self, x):
+        """
+        x1 == x2
+
+        operator.eq(x1, x2)
+
+        """
+        raise NotImplementedError
+
+    def __neq__(self, x):
+        """
+        x1 != x2
+
+        operator.neq(x1, x2)
+
+        """
+        raise NotImplementedError
+
+    x1 != x2: array.__ne__()
+
+        operator.ne(x1, x2)
+
+        operator.__ne__(x1, x2)
+
 
