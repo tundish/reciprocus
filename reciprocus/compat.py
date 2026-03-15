@@ -106,6 +106,19 @@ class DeviceType(enum.StrEnum):
     GPU = enum.auto()
 
 
+class DLPackDeviceType(enum.IntEnum):
+    CPU = 1
+    CUDA = 2
+    CPU_PINNED = 3
+    OPENCL = 4
+    VULKAN = 7
+    METAL = 8
+    VPI = 9
+    ROCM = 10
+    CUDA_MANAGED = 13
+    ONE_API = 14
+
+
 class ArrayInterface:
 
     # https://data-apis.org/array-api/latest/API_specification/array_object.html#arithmetic-operators
@@ -526,4 +539,53 @@ class ArrayInterface:
     @property
     def T(self):
         """ Transpose of the array. """
+        raise NotImplementedError
+
+    # https://data-apis.org/array-api/latest/API_specification/array_object.html#methods
+
+    def __abs__(self):
+        """ Calculates the absolute value for each element of an array instance.  """
+        raise NotImplementedError
+
+    def __array_namespace__(self, *, api_version=None) -> dict:
+        """ Returns an object that has all the array API functions on it. """
+        raise NotImplementedError
+
+    def __bool__(self) -> bool:
+        """ Converts a zero-dimensional array to a Python bool object. """
+        raise NotImplementedError
+
+    def __complex__(self) -> complex:
+        """ Converts a zero-dimensional array to a Python complex object. """
+        raise NotImplementedError
+
+    def __dlpack__(
+        self,
+        *,
+        stream: int | object | None = None,
+        max_version: tuple[int, int] | None = None,
+        dl_device: tuple[enum.Enum, int] | None = None,
+        copy: bool | None = None
+    ) -> "PyCapsule":
+        """ Exports the array for consumption by from_dlpack() as a DLPack capsule. """
+        raise NotImplementedError
+
+    def __dlpack_device__(self) -> tuple[enum.Enum, int]:
+        """ Returns device type and device ID in DLPack format. """
+        raise NotImplementedError
+
+    def __float__(self) -> float:
+        """ Converts a zero-dimensional array to a Python float object. """
+        raise NotImplementedError
+
+    def __index__(self) -> int:
+        """ Converts a zero-dimensional array to a Python int object. """
+        raise NotImplementedError
+
+    def __int__(self) -> int:
+        """ Converts a zero-dimensional array to a Python int object. """
+        raise NotImplementedError
+
+    def to_device(self, device: DeviceType, /, *, stream: int | object | None = None) -> ArrayInterface:
+        """ Copy the array from the device on which it currently resides to the specified device. """
         raise NotImplementedError

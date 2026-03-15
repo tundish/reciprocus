@@ -20,6 +20,7 @@
 from collections.abc import Callable
 import unittest
 
+from reciprocus.compat import ArrayInterface
 from reciprocus.quaternion import Quaternion as Q
 
 
