@@ -190,3 +190,71 @@ class ArrayType:
 
         """
         raise NotImplementedError
+
+    # https://data-apis.org/array-api/latest/API_specification/array_object.html#array-operators
+
+    def __matmul__(self, x):
+        """
+        x1 @ x2
+
+        operator.matmul(x1, x2)
+
+        """
+        raise NotImplementedError
+
+    # https://data-apis.org/array-api/latest/API_specification/array_object.html#bitwise-operators
+
+    def __invert__(self, x):
+        """
+        x1 ~ x2
+
+        operator.inv(x1, x2)
+
+        """
+        raise NotImplementedError
+
+    def __and__(self, x):
+        """
+        x1 & x2
+
+        operator.and(x1, x2)
+
+        """
+        raise NotImplementedError
+
+    def __or__(self, x):
+        """
+        x1 | x2
+
+        operator.or(x1, x2)
+
+        """
+        raise NotImplementedError
+
+    def __xor__(self, x):
+        """
+        x1 ^ x2
+
+        operator.xor(x1, x2)
+
+        """
+        raise NotImplementedError
+
+    def __lshift__(self, x):
+        """
+        x1 << x2
+
+        operator.lshift(x1, x2)
+
+        """
+        raise NotImplementedError
+
+    def __rshift__(self, x):
+        """
+        x1 >> x2
+
+        operator.rshift(x1, x2)
+
+        """
+        raise NotImplementedError
+
