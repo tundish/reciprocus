@@ -256,6 +256,36 @@ class ArrayInterface:
         """
         raise NotImplementedError
 
+    # Reflected arithmetic operators
+
+    def __radd__(self, x):
+        """ x2 + x1 """
+        raise NotImplementedError
+
+    def __rsub__(self, x):
+        """ x1 - x2 """
+        raise NotImplementedError
+
+    def __rmul__(self, x):
+        """ x2 * x1 """
+        raise NotImplementedError
+
+    def __rtruediv__(self, x):
+        """ x2 / x1 """
+        raise NotImplementedError
+
+    def __rfloordiv__(self, x):
+        """ x2 // x1 """
+        raise NotImplementedError
+
+    def __rmod__(self, x):
+        """ x2 % x1 """
+        raise NotImplementedError
+
+    def __rpow__(self, x):
+        """ x2 ** x1 """
+        raise NotImplementedError
+
     # https://data-apis.org/array-api/latest/API_specification/array_object.html#array-operators
 
     def __matmul__(self, x):
@@ -274,6 +304,10 @@ class ArrayInterface:
         operator.imatmul(x1, x2)
 
         """
+        raise NotImplementedError
+
+    def __rmatmul__(self, x):
+        """ x2 @ x1 """
         raise NotImplementedError
 
     # https://data-apis.org/array-api/latest/API_specification/array_object.html#bitwise-operators
@@ -377,6 +411,28 @@ class ArrayInterface:
         operator.irshift(x1, x2)
 
         """
+        raise NotImplementedError
+
+    # Reflected bitwise
+
+    def __rand__(self, x):
+        """ x2 & x1 """
+        raise NotImplementedError
+
+    def __ror__(self, x):
+        """ x2 | x1 """
+        raise NotImplementedError
+
+    def __rxor__(self, x):
+        """ x2 ^ x1 """
+        raise NotImplementedError
+
+    def __rlshift__(self, x):
+        """ x2 << x1 """
+        raise NotImplementedError
+
+    def __rrshift__(self, x):
+        """ x2 >> x1 """
         raise NotImplementedError
 
     # https://data-apis.org/array-api/latest/API_specification/array_object.html#comparison-operators
