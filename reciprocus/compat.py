@@ -491,3 +491,39 @@ class ArrayInterface:
         """
         raise NotImplementedError
 
+    # https://data-apis.org/array-api/latest/API_specification/array_object.html#attributes
+
+    @property
+    def dtype(self):
+        """ Data type of the array elements. """
+        raise NotImplementedError
+
+    @property
+    def device(self):
+        """ Hardware device the array data resides on. """
+        raise NotImplementedError
+
+    @property
+    def mT(self):
+        """ Transpose of a matrix (or a stack of matrices). """
+        raise NotImplementedError
+
+    @property
+    def ndim(self):
+        """ Number of array dimensions (axes). """
+        raise NotImplementedError
+
+    @property
+    def shape(self):
+        """ Array dimensions. """
+        raise NotImplementedError
+
+    @property
+    def size(self):
+        """ Number of elements in an array. """
+        raise NotImplementedError
+
+    @property
+    def T(self):
+        """ Transpose of the array. """
+        raise NotImplementedError
