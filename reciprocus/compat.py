@@ -18,87 +18,31 @@
 # If not, see <https://www.gnu.org/licenses/>.
 
 """
-Implements conformance with Python array API.
+Implements conformity with Python array API.
 See https://data-apis.org/array-api/latest/index.html
 """
 
-"""
-Data Types
-==========
-
-bool
-	
-
-Boolean (True or False).
-
-int8
-	
-
-An 8-bit signed integer whose values exist on the interval [-128, +127].
-
-int16
-	
-
-A 16-bit signed integer whose values exist on the interval [−32,767, +32,767].
-
-int32
-	
-
-A 32-bit signed integer whose values exist on the interval [−2,147,483,647, +2,147,483,647].
-
-int64
-	
-
-A 64-bit signed integer whose values exist on the interval [−9,223,372,036,854,775,807, +9,223,372,036,854,775,807].
-
-uint8
-	
-
-An 8-bit unsigned integer whose values exist on the interval [0, +255].
-
-uint16
-	
-
-A 16-bit unsigned integer whose values exist on the interval [0, +65,535].
-
-uint32
-	
-
-A 32-bit unsigned integer whose values exist on the interval [0, +4,294,967,295].
-
-uint64
-	
-
-A 64-bit unsigned integer whose values exist on the interval [0, +18,446,744,073,709,551,615].
-
-float32
-	
-
-IEEE 754 single-precision (32-bit) binary floating-point number (see IEEE 754-2019).
-
-float64
-	
-
-IEEE 754 double-precision (64-bit) binary floating-point number (see IEEE 754-2019).
-
-complex64
-	
-
-Single-precision (64-bit) complex floating-point number whose real and imaginary components must be IEEE 754 single-precision (32-bit) binary floating-point numbers (see IEEE 754-2019).
-
-complex128
-	
-
-Double-precision (128-bit) complex floating-point number whose real and imaginary components must be IEEE 754 double-precision (64-bit) binary floating-point numbers (see IEEE 754-2019).
-"""
-"""
-DLPack
-======
-
-There may be other reasons why it is not possible or desirable for an implementation to materialize the array as strided data in memory. In such cases, the implementation may raise a BufferError in the __dlpack__ or __dlpack_device__ method. In case an implementation is never able to export its array data via DLPack, it may omit __dlpack__ and __dlpack_device__ completely, and hence from_dlpack may raise an AttributeError.
-"""
-
+from collections import namedtuple
 import enum
+
+
+C = namedtuple("Constraint", ["type", "code", "min", "max"], defaults = [None, None])
+
+
+class DataType(enum.Enum):
+    BOOL        =  C(bool, "?", False, True)
+    INT8        =  C(int, "b", -128, +127)
+    INT16       =  C(int, "h", -32767, +32767)
+    INT32       =  C(int, "i", -2147483647, +2147483647)
+    INT64       =  C(int, "q", -9223372036854775807, +9223372036854775807)
+    UINT8       =  C(int, "B", 0, 255)
+    UINT16      =  C(int, "H", 0, 65535)
+    UINT32      =  C(int, "I", 0, 4294967295)
+    UINT64      =  C(int, "Q", 0, 18446744073709551615)
+    FLOAT32     =  C(float, "f")
+    FLOAT64     =  C(float, "d")
+    COMPLEX64   =  C(float, "F")
+    COMPLEX128  =  C(float, "D")
 
 
 class DeviceType(enum.StrEnum):
