@@ -191,6 +191,71 @@ class ArrayInterface:
         """
         raise NotImplementedError
 
+    # In-place arithmetic
+
+    def __iadd__(self, x):
+        """
+        x1 += x2
+
+        operator.iadd(x1, x2)
+
+        """
+        raise NotImplementedError
+
+    def __isub__(self, x):
+        """
+        x1 -= x2
+
+        operator.isub(x1, x2)
+
+        """
+        raise NotImplementedError
+
+    def __imul__(self, x):
+        """
+        x1 *= x2
+
+        operator.imul(x1, x2)
+
+        """
+        raise NotImplementedError
+
+    def __itruediv__(self, x):
+        """
+        x1 /= x2
+
+        operator.itruediv(x1, x2)
+
+        """
+        raise NotImplementedError
+
+    def __ifloordiv__(self, x):
+        """
+        x1 //= x2
+
+        operator.ifloordiv(x1, x2)
+
+        """
+        raise NotImplementedError
+
+    def __imod__(self, x):
+        """
+        x1 %= x2
+
+        operator.imod(x1, x2)
+
+        """
+        raise NotImplementedError
+
+    def __ipow__(self, x):
+        """
+        x1 **= x2
+
+        operator.ipow(x1, x2)
+
+        """
+        raise NotImplementedError
+
     # https://data-apis.org/array-api/latest/API_specification/array_object.html#array-operators
 
     def __matmul__(self, x):
@@ -198,6 +263,15 @@ class ArrayInterface:
         x1 @ x2
 
         operator.matmul(x1, x2)
+
+        """
+        raise NotImplementedError
+
+    def __imatmul__(self, x):
+        """
+        x1 @= x2
+
+        operator.imatmul(x1, x2)
 
         """
         raise NotImplementedError
@@ -258,6 +332,53 @@ class ArrayInterface:
         """
         raise NotImplementedError
 
+    # In-place bitwise
+
+    def __iand__(self, x):
+        """
+        x1 &= x2
+
+        operator.iand(x1, x2)
+
+        """
+        raise NotImplementedError
+
+    def __ior__(self, x):
+        """
+        x1 |= x2
+
+        operator.ior(x1, x2)
+
+        """
+        raise NotImplementedError
+
+    def __ixor__(self, x):
+        """
+        x1 ^= x2
+
+        operator.ixor(x1, x2)
+
+        """
+        raise NotImplementedError
+
+    def __ilshift__(self, x):
+        """
+        x1 <<= x2
+
+        operator.ilshift(x1, x2)
+
+        """
+        raise NotImplementedError
+
+    def __irshift__(self, x):
+        """
+        x1 >>= x2
+
+        operator.irshift(x1, x2)
+
+        """
+        raise NotImplementedError
+
     # https://data-apis.org/array-api/latest/API_specification/array_object.html#comparison-operators
 
     def __lt__(self, x):
@@ -313,11 +434,4 @@ class ArrayInterface:
 
         """
         raise NotImplementedError
-
-    x1 != x2: array.__ne__()
-
-        operator.ne(x1, x2)
-
-        operator.__ne__(x1, x2)
-
 
