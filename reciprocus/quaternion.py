@@ -26,5 +26,16 @@ https://danceswithcode.net/engineeringnotes/quaternions/conversion_tool.html
 
 """
 
+import dataclasses
+
+from reciprocus.coordinates import Coordinates
+
+
+@dataclasses.dataclass(
+    init=True, repr=True, eq=False,
+    order=False, unsafe_hash=False, frozen=True,
+    match_args=True, kw_only=False,
+    slots=True, weakref_slot=True
+)
 class Quaternion:
     pass
