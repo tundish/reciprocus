@@ -17,22 +17,9 @@
 # GNU General Public License along with reciprocus.
 # If not, see <https://www.gnu.org/licenses/>.
 
-from collections.abc import Callable
 import unittest
 
-from reciprocus.compat import ArrayInterface
-from reciprocus.quaternion import Quaternion as Q
-
-
-class APITests(unittest.TestCase):
-    """
-    Test conformance with Python array API.
-    See https://data-apis.org/array-api/latest/index.html
-    """
-
-    def test_array_namespace(self):
-        self.assertIsInstance(getattr(Q, "__array_namespace__", None), Callable)
-        xp = Q.__array_namespace__(api_version="2025.12")
+from reciprocus.rotation import Rotation as R
 
 
 class QuaternionTests(unittest.TestCase):

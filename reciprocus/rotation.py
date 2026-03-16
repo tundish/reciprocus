@@ -27,6 +27,7 @@ https://danceswithcode.net/engineeringnotes/quaternions/conversion_tool.html
 """
 
 import dataclasses
+from fractions import Fraction
 
 from reciprocus.coordinates import Coordinates
 
@@ -37,5 +38,26 @@ from reciprocus.coordinates import Coordinates
     match_args=True, kw_only=False,
     slots=True, weakref_slot=True
 )
-class Quaternion:
-    pass
+class Rotation:
+    turn: Fraction
+    axis: Coordinates
+
+    @property
+    def angle(self):
+        "Rotation angle"
+        raise NotImplementedError
+
+    @property
+    def roll(self):
+        "Euler angle u"
+        raise NotImplementedError
+
+    @property
+    def pitch(self):
+        "Euler angle v"
+        raise NotImplementedError
+
+    @property
+    def yaw(self):
+        "Euler angle w"
+        raise NotImplementedError

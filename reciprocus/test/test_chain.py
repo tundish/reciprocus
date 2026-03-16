@@ -15,10 +15,14 @@
 # You should have received a copy of the GNU General Public License along with reciprocus.
 # If not, see <https://www.gnu.org/licenses/>.
 
+from collections.abc import Callable
 import dataclasses
 from fractions import Fraction as F
 from numbers import Number
 import unittest
+
+from reciprocus.chain import Chain
+from reciprocus.compat import ArrayInterface
 
 # TODO Cross-ratio invariant in projective geometry.
 
@@ -40,3 +44,15 @@ class ScalarTests(unittest.TestCase):
         c = complex(1.8)
         print(c.conjugate())
         print(conjugate(c))
+
+
+class InterfaceTests(unittest.TestCase):
+    """
+    Test conformance with Python array API.
+    See https://data-apis.org/array-api/latest/index.html
+
+    """
+
+    def test_array_namespace(self):
+        self.assertIsInstance(getattr(ArrayInterface, "__array_namespace__", None), Callable)
+        xp = Chain.__array_namespace__(api_version="2025.12")
