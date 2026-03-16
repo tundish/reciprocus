@@ -17,14 +17,8 @@
 # GNU General Public License along with reciprocus.
 # If not, see <https://www.gnu.org/licenses/>.
 
-"""
-See "Rotations, Quaternions, and Double Groups", Altmann, 1986.
+from reciprocus.compat import ArrayInterface
 
-Thanks also to:
-https://danceswithcode.net/engineeringnotes/quaternions/quaternions.html
-https://danceswithcode.net/engineeringnotes/quaternions/conversion_tool.html
 
-"""
-
-class Quaternion:
+class Chain(ArrayInterface):
     pass
