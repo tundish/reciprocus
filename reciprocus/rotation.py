@@ -27,9 +27,16 @@ https://danceswithcode.net/engineeringnotes/quaternions/conversion_tool.html
 """
 
 import dataclasses
+import enum
 from fractions import Fraction
+import math
 
 from reciprocus.coordinates import Coordinates
+
+
+class Orbit(enum.Enum):
+    ANALOGUE = math.pi
+    DISCRETE = 4
 
 
 @dataclasses.dataclass(
@@ -41,6 +48,7 @@ from reciprocus.coordinates import Coordinates
 class Rotation:
     turn: Fraction
     axis: Coordinates
+    spin: Orbit = Orbit.ANALOGUE
 
     @property
     def angle(self):
