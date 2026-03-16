@@ -17,7 +17,7 @@
 # GNU General Public License along with reciprocus.
 # If not, see <https://www.gnu.org/licenses/>.
 
-from fractions import Fraction
+from fractions import Fraction as F
 import math
 import unittest
 
@@ -37,7 +37,12 @@ class QuaternionTests(unittest.TestCase):
     def test_angle(self):
         axis = C(1, 1, 1)
         for a, r in [
+            (0, R(axis)),
+            (0, R(axis, turn=0)),
             (math.pi, R(axis, turn=0.5)),
+            (2 * math.pi, R(axis, turn=1)),
+            (-2 * math.pi, R(axis, turn=-1)),
+            (5 * math.pi, R(axis, turn=F(5, 2))),
         ]:
             with self.subTest(r=r):
                 self.assertEqual(r.angle, a)
