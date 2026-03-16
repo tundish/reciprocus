@@ -61,7 +61,11 @@ class Rotation:
     @property
     def angle(self):
         "Rotation angle"
-        return 2 * self.spin * self.turn
+        rv = 2 * self.spin * self.turn
+        if not 0 <= rv <= self.spin:
+            raise ValueError(f"{rv} is outside range [0, {self.spin}]")
+        else:
+            return rv
 
     @property
     def roll(self):
