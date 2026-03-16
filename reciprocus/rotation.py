@@ -52,6 +52,12 @@ class Rotation:
     turn: Fraction = 0
     spin: Number = Orbit.ANALOGUE.value
 
+    def __iter__(self):
+        "Generate Rodrigues Quaternion"
+        theta = self.angle
+        yield math.cos(theta / 2)
+        yield from (i * math.sin(theta / 2) for i in self.axis)
+
     @property
     def angle(self):
         "Rotation angle"

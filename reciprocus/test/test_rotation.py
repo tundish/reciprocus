@@ -47,3 +47,14 @@ class QuaternionTests(unittest.TestCase):
             with self.subTest(r=r):
                 self.assertEqual(r.angle, a)
 
+    def test_quaternion(self):
+        data = [
+            (R(C(0, 0, 1), F(1, 12)), (0.9659, 0, 0, 0.2588)),
+        ]
+        for r, x in data:
+            for a, b in zip(r, x):
+                with self.subTest(r=r, x=x, a=a, b=b):
+                    self.assertAlmostEqual(a, b, places=4)
+
+    def test_euler(self):
+        self.assertEqual(R(C(0, 0, 1), F(1, 12)).yaw, math.radians(30))
