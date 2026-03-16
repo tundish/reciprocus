@@ -30,11 +30,13 @@ import dataclasses
 import enum
 from fractions import Fraction
 import math
+from numbers import Number
 
 from reciprocus.coordinates import Coordinates
 
 
 class Orbit(enum.Enum):
+    " Reference orbital velocity "
     ANALOGUE = math.pi
     DISCRETE = 4
 
@@ -48,7 +50,7 @@ class Orbit(enum.Enum):
 class Rotation:
     turn: Fraction
     axis: Coordinates
-    spin: Orbit = Orbit.ANALOGUE
+    spin: Number = Orbit.ANALOGUE.value
 
     @property
     def angle(self):
