@@ -17,8 +17,11 @@
 # GNU General Public License along with reciprocus.
 # If not, see <https://www.gnu.org/licenses/>.
 
+from fractions import Fraction
+import math
 import unittest
 
+from reciprocus.coordinates import Coordinates as C
 from reciprocus.rotation import Rotation as R
 
 
@@ -31,4 +34,11 @@ class QuaternionTests(unittest.TestCase):
         expected_quat = x / Q.asarray([[5.0], [13.0]])
         xp_assert_close(r.as_quat(), expected_quat)
 
+    def test_angle(self):
+        axis = C(1, 1, 1)
+        for a, r in [
+            (math.pi, R(axis, turn=0.5)),
+        ]:
+            with self.subTest(r=r):
+                self.assertEqual(r.angle, a)
 

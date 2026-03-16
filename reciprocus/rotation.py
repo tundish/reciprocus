@@ -48,14 +48,14 @@ class Orbit(enum.Enum):
     slots=True, weakref_slot=True
 )
 class Rotation:
-    turn: Fraction
     axis: Coordinates
+    turn: Fraction = 0
     spin: Number = Orbit.ANALOGUE.value
 
     @property
     def angle(self):
         "Rotation angle"
-        raise NotImplementedError
+        return 2 * self.spin * self.turn
 
     @property
     def roll(self):

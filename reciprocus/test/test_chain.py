@@ -54,5 +54,5 @@ class InterfaceTests(unittest.TestCase):
     """
 
     def test_array_namespace(self):
-        self.assertIsInstance(getattr(ArrayInterface, "__array_namespace__", None), Callable)
-        xp = Chain.__array_namespace__(api_version="2025.12")
+        self.assertIsInstance(getattr(ArrayInterface(), "__array_namespace__", None), Callable)
+        xp = Chain().__array_namespace__(api_version="2025.12")
