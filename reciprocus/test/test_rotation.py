@@ -25,14 +25,7 @@ from reciprocus.coordinates import Coordinates as C
 from reciprocus.rotation import Rotation as R
 
 
-class QuaternionTests(unittest.TestCase):
-
-    @unittest.skip("Dev")
-    def test_generic_quat_matrix(self):
-        x = Q.asarray([[3.0, 4, 0, 0], [5, 12, 0, 0]])
-        r = Rotation.from_quat(x)
-        expected_quat = x / Q.asarray([[5.0], [13.0]])
-        xp_assert_close(r.as_quat(), expected_quat)
+class RotationTests(unittest.TestCase):
 
     def test_angle_range(self):
         axis = C(1, 1, 1)
