@@ -54,11 +54,12 @@ class Rotation:
     spin: Number = Orbit.ANALOGUE.value
 
     @classmethod
-    def from_quat(cls, q: Sequence):
+    def from_rodrigues_parameters(cls, q: Sequence[Number], spin: Number = Orbit.ANALOGUE.value, places: int = 12):
         assert len(q) == 4
         theta = 2 * math.acos(q[0])
-        print(theta)
-        return theta
+        axis = Coordinates(*(i / math.sin(theta / 2) for i in q[1:]))
+        turn = Fraction(theta / spin / 2).limit_denominator(10 ** places)
+        return cls(axis, turn=turn, spin=spin)
 
     def __iter__(self):
         "Generate Rodrigues Quaternion"

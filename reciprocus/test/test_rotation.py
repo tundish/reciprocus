@@ -53,10 +53,11 @@ class RotationTests(unittest.TestCase):
             for turn in (0, F(1, 12), F(1, 4), F(1, 3), F(1, 2)):
                 r = R(axis, turn)
                 with self.subTest(r=r):
-                    x = R.from_quat(C(*r))
-                    self.assertEqual(x.axis, r.axis)
-                    self.assertEqual(x.turn, r.turn)
+                    x = R.from_rodrigues_parameters(C(*r))
+                    self.assertEqual([round(i, 12) for i in x.axis], [round(i, 12) for i in r.axis])
+                    self.assertEqual(x.turn, r.turn, math.degrees(x.angle))
                     self.assertEqual(x.spin, r.spin)
+                    self.assertEqual(x.angle, r.angle)
 
     def test_sequence(self):
         data = [
