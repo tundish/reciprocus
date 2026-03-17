@@ -26,6 +26,7 @@ https://danceswithcode.net/engineeringnotes/quaternions/conversion_tool.html
 
 """
 
+from collections.abc import Sequence
 import dataclasses
 import enum
 from fractions import Fraction
@@ -53,8 +54,11 @@ class Rotation:
     spin: Number = Orbit.ANALOGUE.value
 
     @classmethod
-    def from_quat(cls, q: Coordinates):
+    def from_quat(cls, q: Sequence):
         assert len(q) == 4
+        theta = 2 * math.acos(q[0])
+        print(theta)
+        return theta
 
     def __iter__(self):
         "Generate Rodrigues Quaternion"
