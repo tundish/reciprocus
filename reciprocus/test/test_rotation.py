@@ -66,3 +66,23 @@ class RotationTests(unittest.TestCase):
         self.assertEqual(R(C(1, 0, 0), F(1, 12)).roll, math.radians(30))
         self.assertEqual(R(C(0, 1, 0), F(1, 12)).pitch, math.radians(30))
         self.assertEqual(R(C(0, 0, 1), F(1, 12)).yaw, math.radians(30))
+
+        self.assertEqual(R(C(0, 1, 0), F(1, 4)).roll, 0)
+        self.assertEqual(R(C(0, 1, 0), F(1, 4)).pitch, math.radians(90))
+        self.assertEqual(R(C(0, 1, 0), F(1, 4)).yaw, 0)
+
+    def test_matrix(self):
+        m = R(C(1, 0, 0), F(1, 12)).matrix
+        self.assertEqual(m[0], [1, 0, 0])
+        self.assertEqual([round(i, 3) for i in m[1]], [0, 0.866, -0.5])
+        self.assertEqual([round(i, 3) for i in m[2]], [0, 0.5, 0.866])
+
+        m = R(C(0, 1, 0), F(1, 12)).matrix
+        self.assertEqual([round(i, 3) for i in m[0]], [0.866, 0, 0.5])
+        self.assertEqual(m[1], [0, 1, 0])
+        self.assertEqual([round(i, 3) for i in m[2]], [-0.5, 0, 0.866])
+
+        m = R(C(0, 0, 1), F(1, 12)).matrix
+        self.assertEqual([round(i, 3) for i in m[0]], [0.866, -0.5, 0])
+        self.assertEqual([round(i, 3) for i in m[1]], [0.5, 0.866, 0])
+        self.assertEqual(m[2], [0, 0, 1])
