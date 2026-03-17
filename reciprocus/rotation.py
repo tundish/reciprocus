@@ -52,6 +52,10 @@ class Rotation:
     turn: Fraction = 0
     spin: Number = Orbit.ANALOGUE.value
 
+    @classmethod
+    def from_quat(cls, q: Coordinates):
+        assert len(q) == 4
+
     def __iter__(self):
         "Generate Rodrigues Quaternion"
         theta = self.angle

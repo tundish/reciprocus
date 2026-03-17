@@ -48,7 +48,17 @@ class RotationTests(unittest.TestCase):
             with self.subTest(r=r):
                 self.assertEqual(r.angle, a)
 
-    def test_quaternion(self):
+    def test_from_quaternion(self):
+        for axis in (C(0, 0, 1), C(0, 1, 0), C(0, 0, 1)):
+            for turn in (0, F(1, 12), F(1, 4), F(1, 3), F(1, 2)):
+                r = R(axis, turn)
+                with self.subTest(r=r):
+                    x = R.from_quat(C(*r))
+                    self.assertEqual(x.axis, r.axis)
+                    self.assertEqual(x.turn, r.turn)
+                    self.assertEqual(x.spin, r.spin)
+
+    def test_sequence(self):
         data = [
             (R(C(0, 0, 1), F(1, 12)), (0.9659, 0, 0, 0.2588)),
             (R(C(0, 1, 0), F(1, 12)), (0.9659, 0, 0.2588, 0)),
