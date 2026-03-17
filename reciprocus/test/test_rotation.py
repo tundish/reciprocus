@@ -78,7 +78,15 @@ class RotationTests(unittest.TestCase):
 
     def test_euler(self):
         self.assertEqual(R(C(1, 0, 0), F(1, 12)).roll, math.radians(30))
+        self.assertEqual(R(C(1, 0, 0), F(1, 12)).pitch, 0)
+        self.assertEqual(R(C(1, 0, 0), F(1, 12)).yaw, 0)
+
+        self.assertEqual(R(C(0, 1, 0), F(1, 12)).roll, 0)
         self.assertEqual(R(C(0, 1, 0), F(1, 12)).pitch, math.radians(30))
+        self.assertEqual(R(C(0, 1, 0), F(1, 12)).yaw, 0)
+
+        self.assertEqual(R(C(0, 0, 1), F(1, 12)).roll, 0)
+        self.assertEqual(R(C(0, 0, 1), F(1, 12)).pitch, 0)
         self.assertEqual(R(C(0, 0, 1), F(1, 12)).yaw, math.radians(30))
 
         self.assertEqual(R(C(0, 1, 0), F(1, 4)).roll, 0)
