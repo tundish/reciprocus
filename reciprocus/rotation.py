@@ -66,14 +66,21 @@ class Rotation:
     @property
     def roll(self):
         "Euler angle u"
-        raise NotImplementedError
+        q = tuple(self)
+        a = 2 * (q[0] * q[1] + q[2] * q[3])
+        b = q[0] ** 2 - q[1] ** 2 - q[2] ** 2 + q[3] ** 2
+        return math.atan2(a, b)
 
     @property
     def pitch(self):
         "Euler angle v"
-        raise NotImplementedError
+        q = tuple(self)
+        return math.asin(2 * (q[0] * q[2] - q[1] * q[3]))
 
     @property
     def yaw(self):
         "Euler angle w"
-        raise NotImplementedError
+        q = tuple(self)
+        a = 2 * (q[0] * q[3] + q[1] * q[2])
+        b = q[0] ** 2 + q[1] ** 2 - q[2] ** 2 - q[3] ** 2
+        return math.atan2(a, b)

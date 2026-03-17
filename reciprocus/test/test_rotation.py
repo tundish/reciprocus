@@ -62,4 +62,6 @@ class QuaternionTests(unittest.TestCase):
                     self.assertAlmostEqual(a, b, places=4)
 
     def test_euler(self):
+        self.assertEqual(R(C(1, 0, 0), F(1, 12)).roll, math.radians(30))
+        self.assertEqual(R(C(0, 1, 0), F(1, 12)).pitch, math.radians(30))
         self.assertEqual(R(C(0, 0, 1), F(1, 12)).yaw, math.radians(30))
