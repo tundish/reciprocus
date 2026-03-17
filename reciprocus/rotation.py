@@ -57,7 +57,10 @@ class Rotation:
     def from_rodrigues_parameters(cls, q: Sequence[Number], spin: Number = Orbit.ANALOGUE.value, places: int = 12):
         assert len(q) == 4
         theta = 2 * math.acos(q[0])
-        axis = Coordinates(*(i / math.sin(theta / 2) for i in q[1:]))
+        try:
+            axis = Coordinates(*(i / math.sin(theta / 2) for i in q[1:]))
+        except ZeroDivisionError:
+            axis = Coordinates(1, 0, 0)  # Default axis for identity quaternion
         turn = Fraction(theta / spin / 2).limit_denominator(10 ** places)
         return cls(axis, turn=turn, spin=spin)
 
