@@ -269,11 +269,11 @@ class ArrayInterface:
 
     # https://data-apis.org/array-api/latest/API_specification/array_object.html#bitwise-operators
 
-    def __invert__(self, x):
+    def __invert__(self):
         """
-        x1 ~ x2
+        ~ x
 
-        operator.inv(x1, x2)
+        operator.inv(x)
 
         """
         raise NotImplementedError

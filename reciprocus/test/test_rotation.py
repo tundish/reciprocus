@@ -19,6 +19,7 @@
 
 from fractions import Fraction as F
 import math
+import operator
 import unittest
 
 from reciprocus.coordinates import Coordinates as C
@@ -108,3 +109,15 @@ class RotationTests(unittest.TestCase):
         self.assertEqual([round(i, 3) for i in m[0]], [0.866, -0.5, 0])
         self.assertEqual([round(i, 3) for i in m[1]], [0.5, 0.866, 0])
         self.assertEqual(m[2], [0, 0, 1])
+
+    def test_inverse(self):
+        for rot in [
+            R(C(0, 0, 0)),
+        ]:
+            with self.subTest(rot=rot):
+                rv = operator.invert(rot)
+                self.assertEqual(len(rv), 4)
+                self.assertEqual(rv[0], rot[0])
+                self.assertEqual(rv[1], -rot[1])
+                self.assertEqual(rv[2], -rot[2])
+                self.assertEqual(rv[3], -rot[3])
