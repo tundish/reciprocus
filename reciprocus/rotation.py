@@ -137,4 +137,5 @@ class Rotation:
         ]
 
     def __invert__(self):
-        return self
+        q = tuple(self)
+        return self.from_rodrigues_parameters([q[0], -q[1], -q[2], -q[3]], spin=self.spin)
