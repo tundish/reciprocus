@@ -30,14 +30,14 @@ class RotationTests(unittest.TestCase):
 
     def test_angle_range(self):
         axis = C(1, 1, 1)
-        for a, r in [
-            (-0.002 * math.pi, R(axis, turn=0 - 0.001)),
-            (2.002 * math.pi, R(axis, turn=1.001)),
-        ]:
-            with self.subTest(r=r):
-                with self.assertRaises(ValueError) as context:
-                    r.angle
-                self.assertIn(str(a), format(context.exception))
+
+        with self.assertRaises(ValueError) as context:
+            R(axis, turn=0 - 0.001)
+        self.assertIn(str(-0.002 * math.pi), format(context.exception))
+
+        with self.assertRaises(ValueError) as context:
+            R(axis, turn=1.001)
+        self.assertIn(str(2.002 * math.pi), format(context.exception))
 
     def test_angle(self):
         axis = C(1, 1, 1)

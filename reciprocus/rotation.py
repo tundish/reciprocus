@@ -72,7 +72,7 @@ class Rotation:
         try:
             yield from self.norm
         except AttributeError:
-            "Generate Rodrigues Quaternion"
+            # Generate Rodrigues Quaternion
             theta = self.angle
             yield math.cos(theta / 2)
             yield from (i * math.sin(theta / 2) for i in self.axis)
