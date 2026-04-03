@@ -113,12 +113,12 @@ class RotationTests(unittest.TestCase):
     def test_inverse(self):
         for rot in [
             R(C(0, 0, 0)),
+            R(C(0, 0, 1), F(1, 12)),
         ]:
             with self.subTest(rot=rot):
                 rv = operator.invert(rot)
                 self.assertIsInstance(rv , R)
 
-                rv = list(rv)
                 self.assertEqual(len(rv), 4)
                 self.assertEqual(rv[0], rot[0])
                 self.assertEqual(rv[1], -rot[1])

@@ -77,6 +77,12 @@ class Rotation:
             yield math.cos(theta / 2)
             yield from (i * math.sin(theta / 2) for i in self.axis)
 
+    def __getitem__(self, key):
+        return self.norm[key]
+
+    def __len__(self):
+        return len(self.norm)
+
     @property
     def angle(self):
         "Rotation angle"
