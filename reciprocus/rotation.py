@@ -52,6 +52,7 @@ class Rotation:
     axis: Coordinates
     turn: Fraction = 0
     spin: Number = Orbit.ANALOGUE.value
+    norm: tuple = dataclasses.field(init=False)
 
     @classmethod
     def from_rodrigues_parameters(cls, q: Sequence[Number], spin: Number = Orbit.ANALOGUE.value, places: int = 12):
@@ -64,11 +65,17 @@ class Rotation:
         turn = Fraction(theta / spin / 2).limit_denominator(10 ** places)
         return cls(axis, turn=turn, spin=spin)
 
+    def __post_init__(self):
+        object.__setattr__(self, "norm", tuple(self))
+
     def __iter__(self):
-        "Generate Rodrigues Quaternion"
-        theta = self.angle
-        yield math.cos(theta / 2)
-        yield from (i * math.sin(theta / 2) for i in self.axis)
+        try:
+            yield from self.norm
+        except AttributeError:
+            "Generate Rodrigues Quaternion"
+            theta = self.angle
+            yield math.cos(theta / 2)
+            yield from (i * math.sin(theta / 2) for i in self.axis)
 
     @property
     def angle(self):

@@ -117,6 +117,8 @@ class RotationTests(unittest.TestCase):
             with self.subTest(rot=rot):
                 rv = operator.invert(rot)
                 self.assertIsInstance(rv , R)
+
+                rv = list(rv)
                 self.assertEqual(len(rv), 4)
                 self.assertEqual(rv[0], rot[0])
                 self.assertEqual(rv[1], -rot[1])
