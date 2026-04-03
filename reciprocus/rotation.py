@@ -139,3 +139,16 @@ class Rotation:
     def __invert__(self):
         q = tuple(self)
         return self.from_rodrigues_parameters([q[0], -q[1], -q[2], -q[3]], spin=self.spin)
+
+    def __matmul__(self, x):
+        r = tuple(self)
+        s = tuple(x)
+        return self.from_rodrigues_parameters(
+            [
+                r[0] * s[0] - r[1] * s[1] - r[2] * s[2] - r[3] * s[3],
+                r[0] * s[1] + r[1] * s[0] - r[2] * s[3] + r[3] * s[2],
+                r[0] * s[2] + r[1] * s[3] + r[2] * s[0] - r[3] * s[1],
+                r[0] * s[3] - r[1] * s[2] + r[2] * s[1] + r[3] * s[0],
+            ],
+            spin=self.spin
+        )

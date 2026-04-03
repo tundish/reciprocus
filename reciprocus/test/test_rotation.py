@@ -139,3 +139,9 @@ class RotationTests(unittest.TestCase):
         [(0 .7 0) .7] ∗ [(.7 0 0) .7] = [(0.5 0.5 − 0.5) 0.5]
         [(0.7 0 0) .7] ∗ [(0 .7 0) .7] = [(.5 .5 .5) .5]
         """
+        # [1 0 0], 10° then [0 1 0], 10° ~= [1 1 0], 14°
+        rv = R(C(1, 0, 0), F(1, 36)) @ R(C(0, 1, 0), F(1, 36))
+        self.assertEqual(round(math.degrees(rv.angle), 3), 14.133)
+
+        rv = R.from_rodrigues_parameters((0.7, 0.7, 0, 0)) @ R.from_rodrigues_parameters((0.7, 0, 0.7, 0))
+        self.assertEqual([round(i, 2) for i in rv], (0.5, 0.5, 0.5, 0.5))
