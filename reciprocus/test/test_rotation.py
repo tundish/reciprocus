@@ -116,8 +116,21 @@ class RotationTests(unittest.TestCase):
         ]:
             with self.subTest(rot=rot):
                 rv = operator.invert(rot)
+                self.assertIsInstance(rv , R)
                 self.assertEqual(len(rv), 4)
                 self.assertEqual(rv[0], rot[0])
                 self.assertEqual(rv[1], -rot[1])
                 self.assertEqual(rv[2], -rot[2])
                 self.assertEqual(rv[3], -rot[3])
+
+    def test_mult(self):
+        """
+        [1 0 0],10° then [0 1 0],10° ~= [1 1 0],14 °
+        [100],180° then [010],180° [0 0 1],180°
+        [100],90 and [010],90 = [1 1 -1],120
+        [010],90 and [100],90 = [1 1 1],120
+        [(0 1 0) 0]*[(1 0 0) 0]=[(0 0 -1) 0]
+        [(0 0.1 0) 0.99] * [(0.1 0 0) 0.99] ~= [(0.1 0.1 -0.01) 0.99]
+        [(0 .7 0) .7] ∗ [(.7 0 0) .7] = [(0.5 0.5 − 0.5) 0.5]
+        [(0.7 0 0) .7] ∗ [(0 .7 0) .7] = [(.5 .5 .5) .5]
+        """
