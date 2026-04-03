@@ -130,6 +130,10 @@ class RotationTests(unittest.TestCase):
 
     def test_mult(self):
         """
+        Numerical examples from https://media.gdcvault.com/GDC2014/Presentations/stan_melax_working_with_3D.pdf
+
+        """
+        """
         [1 0 0],10° then [0 1 0],10° ~= [1 1 0],14 °
         [100],180° then [010],180° [0 0 1],180°
         [100],90 and [010],90 = [1 1 -1],120
@@ -143,5 +147,11 @@ class RotationTests(unittest.TestCase):
         rv = R(C(1, 0, 0), F(1, 36)) @ R(C(0, 1, 0), F(1, 36))
         self.assertEqual(round(math.degrees(rv.angle), 3), 14.133)
 
+        # [100], 180° then [010], 180° = [001], 180°
+        rv = R(C(1, 0, 0), F(1, 2)) @ R(C(0, 1, 0), F(1, 2))
+        self.assertEqual(round(math.degrees(rv.angle), 12), 180)
+        self.assertEqual([round(i, 12) for i in rv.axis], [0, 0, -1])
+
+        # [(0.7 0 0) .7] ∗ [(0 .7 0) .7] = [(.5 .5 .5) .5]
         rv = R.from_rodrigues_parameters((0.7, 0.7, 0, 0)) @ R.from_rodrigues_parameters((0.7, 0, 0.7, 0))
-        self.assertEqual([round(i, 2) for i in rv], (0.5, 0.5, 0.5, 0.5))
+        self.assertEqual([round(i, 1) for i in rv], [0.5, 0.5, 0.5, -0.5], rv)
