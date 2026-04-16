@@ -48,6 +48,7 @@ build-backend = "setuptools.build_meta"
 packages = [
     "reciprocus",
     "reciprocus.test",
+    "reciprocus.util",
 ]
 
 [tool.setuptools.package-data]
