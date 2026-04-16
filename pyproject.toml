@@ -25,6 +25,10 @@ dependencies = [
 test = [
     "quaternionic",
 ]
+search = [
+    "forumscraper",
+    "math-core",
+]
 viz = [
     "pyglet",
     "scipy",
