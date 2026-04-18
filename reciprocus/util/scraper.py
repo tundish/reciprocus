@@ -27,36 +27,52 @@ from xml.etree import ElementTree as ET
 import unittest
 
 
-class RegexTests(unittest.TestCase):
+class Fixer:
+    comment_matcher = re.compile(r"<!--.*?-->", re.M | re.S)
+
+    def __init__(self):
+        self.logger = logging.getLogger("fixer")
+
+    def __call__(self, path):
+        text = path.read_text()
+        text = text.removeprefix("<!DOCTYPE html>")
+        text, n = Fixer.comment_matcher.subn("", text)
+        try:
+            tree = ET.fromstring(text)
+            return tree.getroot()
+        except ET.ParseError as error:
+            pos = int(format(error).split()[-1])
+            a, b = max(0, pos - 64), min(pos + 12, len(text))
+            self.logger.warning(f"XML error at pos {pos} near: {text[a: b]}", extra=dict(path=path))
+
+
+class FixerTests(unittest.TestCase):
 
     def test_match_comments(self):
         text = """
             <!--[if lte IE 9]> <link href="./styles/prosilver/theme/tweaks.css?assets_version=29" rel="stylesheet">
             <![endif]-->
         """
-        self.fail(text)
-
-
-def reformat(path):
-    text = path.read_text()
-    text = text.removeprefix("<!DOCTYPE html>")
-    tree = ET.fromstring(text)
-    return tree.getroot()
+        m = Fixer.comment_matcher.search(text)
+        self.assertTrue(m)
+        self.assertEqual(m[0], text.strip())
 
 
 def main(args):
     level = logging.DEBUG if args.debug else logging.INFO
     logging.basicConfig(
         level=level, style="{",
+        format="{asctime}|{levelname:>8}| {name:<16}| {path!s:<36}| {message}",
     )
     logger = logging.getLogger("scraper")
     args.output.mkdir(parents=True, exist_ok=True)
 
+    fixer = Fixer()
     for path in args.paths:
-        logger.info(f"{path}", extra=dict())
-        root = reformat(path)
+        logger.info(f"Fixing file", extra=dict(path=path))
+        root = fixer(path)
 
-    logger.info(f"Completed actions", extra=dict())
+    logger.info(f"Completed actions", extra=dict(path=""))
     return 0
 
 
