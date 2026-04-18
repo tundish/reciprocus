@@ -31,6 +31,8 @@ class Fixer:
     comment_matcher = re.compile(r"<!--.*?-->", re.M | re.S)
     head_matcher = re.compile(r"<head.*/head>", re.M | re.S)
     link_matcher = re.compile(r"<link.*?>", re.M | re.S)
+    page_matcher = re.compile(r'<div class="pagination".*?/div>', re.M | re.S)
+    inner_matcher = re.compile(r'<div class="inner".*?/div>', re.M | re.S)
 
     def __init__(self):
         self.logger = logging.getLogger("fixer")
@@ -39,6 +41,8 @@ class Fixer:
         text = path.read_text()
         text = text.removeprefix("<!DOCTYPE html>")
         text, n = Fixer.head_matcher.subn("", text)
+        text, n = Fixer.page_matcher.subn("", text)
+        text, n = Fixer.inner_matcher.subn("", text)
         text, n = Fixer.comment_matcher.subn("", text)
         for w in ("itemscope",):
             text = text.replace(w, "")
