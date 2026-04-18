@@ -29,6 +29,8 @@ import unittest
 
 class Fixer:
     comment_matcher = re.compile(r"<!--.*?-->", re.M | re.S)
+    head_matcher = re.compile(r"<head.*/head>", re.M | re.S)
+    link_matcher = re.compile(r"<link.*?>", re.M | re.S)
 
     def __init__(self):
         self.logger = logging.getLogger("fixer")
@@ -36,7 +38,10 @@ class Fixer:
     def __call__(self, path):
         text = path.read_text()
         text = text.removeprefix("<!DOCTYPE html>")
+        text, n = Fixer.head_matcher.subn("", text)
         text, n = Fixer.comment_matcher.subn("", text)
+        for w in ("itemscope",):
+            text = text.replace(w, "")
         try:
             tree = ET.fromstring(text)
             return tree.getroot()
@@ -48,6 +53,16 @@ class Fixer:
 
 
 class FixerTests(unittest.TestCase):
+
+    def test_link_comments(self):
+        text = """
+            <link rel="alternate" type="application/atom+xml" title="Feed - Topic - Rotational Vibration"
+            href="/phpBB3/feed/topic/106"> <link rel="canonical"
+            href="https://reciprocal.systems/phpBB3/viewtopic.php?t=106&amp;start=10">
+        """
+        links = Fixer.link_matcher.findall(text)
+        self.assertEqual(len(links), 2)
+        self.assertEqual(" ".join(links), text.strip())
 
     def test_match_comments(self):
         text = """
