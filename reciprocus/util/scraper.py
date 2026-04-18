@@ -18,3 +18,41 @@
 # If not, see <https://www.gnu.org/licenses/>.
 
 
+import argparse
+import logging
+from pathlib import Path
+import sys
+
+
+def main(args):
+    level = logging.DEBUG if args.debug else logging.INFO
+    logging.basicConfig(
+        level=level, style="{",
+    )
+    logger = logging.getLogger("scraper")
+    args.output.mkdir(parents=True, exist_ok=True)
+
+    logger.debug(f"{args.paths}", extra=dict())
+    logger.info(f"Completed actions", extra=dict())
+    return 0
+
+
+def parser():
+    default_path = Path.cwd().joinpath("output").resolve()
+    rv = argparse.ArgumentParser(usage=__doc__, fromfile_prefix_chars="=")
+    rv.add_argument("paths", nargs="+", type=Path, help="Specify file paths")
+    rv.add_argument("-O", "--output", type=Path, default=default_path, help=f"Specify output directory [{default_path}]")
+    rv.add_argument("--debug", action="store_true", default=False, help=f"Display debug logs")
+    rv.convert_arg_line_to_args = lambda x: x.split()
+    return rv
+
+
+def run():
+    p = parser()
+    args, res = p.parse_known_args()
+    rv = main(args)
+    sys.exit(rv)
+
+
+if __name__ == "__main__":
+    run()
