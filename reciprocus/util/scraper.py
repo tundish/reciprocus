@@ -43,7 +43,8 @@ class Fixer:
         except ET.ParseError as error:
             pos = int(format(error).split()[-1])
             a, b = max(0, pos - 64), min(pos + 12, len(text))
-            self.logger.warning(f"XML error at pos {pos} near: {text[a: b]}", extra=dict(path=path))
+            self.logger.warning(f"XML error near {text[a: b]}", extra=dict(path=path))
+            self.logger.warning(f"Pos {pos:08d}:    " + " " * 57 + "^", extra=dict(path=path))
 
 
 class FixerTests(unittest.TestCase):
