@@ -33,22 +33,19 @@ class Fixer:
     link_matcher = re.compile(r"<link.*?>", re.M | re.S)
     page_matcher = re.compile(r'<div class="pagination".*?/div>', re.M | re.S)
     inner_matcher = re.compile(r'<div class="inner".*?/div>', re.M | re.S)
+    content_matcher = re.compile(r'<div class="content".*?/div>', re.M | re.S)
 
     def __init__(self):
         self.logger = logging.getLogger("fixer")
 
     def __call__(self, path):
         text = path.read_text()
-        text = text.removeprefix("<!DOCTYPE html>")
-        text, n = Fixer.head_matcher.subn("", text)
-        text, n = Fixer.page_matcher.subn("", text)
-        text, n = Fixer.inner_matcher.subn("", text)
         text, n = Fixer.comment_matcher.subn("", text)
-        for w in ("itemscope",):
-            text = text.replace(w, "")
+        text = text.replace("<br>", "<br />")
+        match = Fixer.content_matcher.search(text)
+        self.logger.info(f"{match=}", extra=dict(path=path))
         try:
-            tree = ET.fromstring(text)
-            return tree.getroot()
+            return ET.fromstring(match[0])
         except ET.ParseError as error:
             pos = int(format(error).split()[-1])
             a, b = max(0, pos - 64), min(pos + 12, len(text))
