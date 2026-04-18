@@ -21,7 +21,27 @@
 import argparse
 import logging
 from pathlib import Path
+import re
 import sys
+from xml.etree import ElementTree as ET
+import unittest
+
+
+class RegexTests(unittest.TestCase):
+
+    def test_match_comments(self):
+        text = """
+            <!--[if lte IE 9]> <link href="./styles/prosilver/theme/tweaks.css?assets_version=29" rel="stylesheet">
+            <![endif]-->
+        """
+        self.fail(text)
+
+
+def reformat(path):
+    text = path.read_text()
+    text = text.removeprefix("<!DOCTYPE html>")
+    tree = ET.fromstring(text)
+    return tree.getroot()
 
 
 def main(args):
@@ -32,7 +52,10 @@ def main(args):
     logger = logging.getLogger("scraper")
     args.output.mkdir(parents=True, exist_ok=True)
 
-    logger.debug(f"{args.paths}", extra=dict())
+    for path in args.paths:
+        logger.info(f"{path}", extra=dict())
+        root = reformat(path)
+
     logger.info(f"Completed actions", extra=dict())
     return 0
 
@@ -43,6 +66,7 @@ def parser():
     rv.add_argument("paths", nargs="+", type=Path, help="Specify file paths")
     rv.add_argument("-O", "--output", type=Path, default=default_path, help=f"Specify output directory [{default_path}]")
     rv.add_argument("--debug", action="store_true", default=False, help=f"Display debug logs")
+    rv.add_argument("--test", action="store_true", default=False, help=f"Run unit tests")
     rv.convert_arg_line_to_args = lambda x: x.split()
     return rv
 
@@ -50,8 +74,12 @@ def parser():
 def run():
     p = parser()
     args, res = p.parse_known_args()
-    rv = main(args)
-    sys.exit(rv)
+    if args.test:
+        sys.argv[1:] = []
+        unittest.main()
+    else:
+        rv = main(args)
+        sys.exit(rv)
 
 
 if __name__ == "__main__":
