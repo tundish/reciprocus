@@ -30,6 +30,7 @@ import unittest
 class Fixer:
     comment_matcher = re.compile(r"<!--.*?-->", re.M | re.S)
     head_matcher = re.compile(r"<head.*/head>", re.M | re.S)
+    image_matcher = re.compile(r"<img.*?>", re.M | re.S)
     link_matcher = re.compile(r"<link.*?>", re.M | re.S)
     page_matcher = re.compile(r'<div class="pagination".*?/div>', re.M | re.S)
     inner_matcher = re.compile(r'<div class="inner".*?/div>', re.M | re.S)
@@ -41,6 +42,12 @@ class Fixer:
     @staticmethod
     def attach_aside(match):
         return match[0].replace("<div", "<aside").replace("</div>", "</aside>")
+
+    @staticmethod
+    def terminate_image(match):
+        if "/>" not in match[0]:
+            return match[0].replace(">", " />")
+        return match[0]
 
     @staticmethod
     def undiv_blockquote(match):
@@ -55,6 +62,7 @@ class Fixer:
         text = text.replace("<br>", "<br />")
         text, n = Fixer.attachment_matcher.subn(Fixer.attach_aside, text)
         text, n = Fixer.blockquote_matcher.subn(Fixer.undiv_blockquote, text)
+        text, n = Fixer.image_matcher.subn(Fixer.terminate_image, text)
         match = Fixer.content_matcher.search(text)
         self.logger.debug(f"{match=}", extra=dict(path=path))
         try:
@@ -121,11 +129,12 @@ class FixerTests(unittest.TestCase):
         </p></blockquote>
         <a href="https://en.wikipedia.org/wiki/Michio_Kaku" class="postlink">https://en.wikipedia.org/wiki/Michio_Kaku</a>
         <br /> <br />
-        What Wikipedia explicitly <em class="text-italics">doesn't</em>
-        tell us is <strong class="text-strong">e = MC²</strong></span><br /> <br />r
+        What Wikipedia explicitly <em class="text-italics">doesn't</em> tell us is
+        <span style="font-size: 200%; line-height: normal"><strong class="text-strong">e = MC²</strong></span>
         <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fuploads-ssl.webflow.com%2F5c55f4835309587c21460b5f%2F5e211638d2126f2ccbbc1a13_8de37575-p-800.png&amp;f=1&amp;nofb=1" class="postimage" alt="Image">
         ...only to find in the "end"...<br /> <br /> 1 = Φ(π/4)²<br /> <br /> ...they failed to ask the right <em class="text-italics">question(s)</em>.</div>
         """
+        text, n = Fixer.image_matcher.subn(Fixer.terminate_image, text)
         root = ET.fromstring(text)
         self.assertIsInstance(root, ET.Element)
 
