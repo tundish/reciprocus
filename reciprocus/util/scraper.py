@@ -64,11 +64,14 @@ class Fixer:
             self.logger.info(f"No content", extra=dict(path=path))
         except ET.ParseError as error:
             match = Fixer.error_matcher.search(format(error))
-            line = int(match["line"]) - 1
+            line_nr = int(match["line"]) - 1
             pos = int(match["column"]) - 1
-            snip = text.splitlines()[line]
+            line = text.splitlines()[line_nr]
+            a = max(0, pos - 36)
+            b = min(pos + 8, len(line))
             self.logger.warning(f"{error}", extra=dict(path=path))
-            print(text)
+            self.logger.debug(f"{line[a: b]}", extra=dict(path=path))
+            self.logger.debug(" " * 36 + "^", extra=dict(path=path))
 
 
 class FixerTests(unittest.TestCase):
