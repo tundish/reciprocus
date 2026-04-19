@@ -35,10 +35,15 @@ class Fixer:
     inner_matcher = re.compile(r'<div class="inner".*?/div>', re.M | re.S)
     content_matcher = re.compile(r'<div class="content".*?/div>', re.M | re.S)
     attachment_matcher = re.compile(r'<div class="inline-attachment".*?/div>', re.M | re.S)
+    blockquote_matcher = re.compile(r'<blockquote.*?/blockquote>', re.M | re.S)
 
     @staticmethod
     def attach_aside(match):
         return match[0].replace("<div", "<aside").replace("</div>", "</aside>")
+
+    @staticmethod
+    def undiv_blockquote(match):
+        return match[0].replace("<div", "<p").replace("</div>", "</p>")
 
     def __init__(self):
         self.logger = logging.getLogger("fixer")
@@ -48,6 +53,7 @@ class Fixer:
         text, n = Fixer.comment_matcher.subn("", text)
         text = text.replace("<br>", "<br />")
         text, n = Fixer.attachment_matcher.subn(Fixer.attach_aside, text)
+        text, n = Fixer.blockquote_matcher.subn(Fixer.undiv_blockquote, text)
         match = Fixer.content_matcher.search(text)
         self.logger.debug(f"{match=}", extra=dict(path=path))
         try:
