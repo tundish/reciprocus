@@ -36,6 +36,7 @@ class Fixer:
     content_matcher = re.compile(r'<div class="content".*?/div>', re.M | re.S)
     attachment_matcher = re.compile(r'<div class="inline-attachment".*?/div>', re.M | re.S)
     blockquote_matcher = re.compile(r'<blockquote.*?/blockquote>', re.M | re.S)
+    error_matcher = re.compile(r':\s+line\s+(?P<line>\d+)[, ]*column\s+(?P<column>\d+)\s*', re.M | re.S)
 
     @staticmethod
     def attach_aside(match):
@@ -62,14 +63,22 @@ class Fixer:
         except TypeError:
             self.logger.info(f"No content", extra=dict(path=path))
         except ET.ParseError as error:
-            pos = int(format(error).split()[-1])
-            a, b = max(0, pos - 64), min(pos + 12, len(text))
-            self.logger.warning(f"XML error near {text[a: b]}", extra=dict(path=path))
-            self.logger.warning(f"Pos {pos:08d}:    " + " " * 57 + "^", extra=dict(path=path))
+            match = Fixer.error_matcher.search(format(error))
+            line = int(match["line"]) - 1
+            pos = int(match["column"]) - 1
+            snip = text.splitlines()[line]
+            self.logger.warning(f"{error}", extra=dict(path=path))
             print(text)
 
 
 class FixerTests(unittest.TestCase):
+
+    def test_parse_pos(self):
+        text = "mismatched tag: line 1, column 1561"
+        match = Fixer.error_matcher.search(text)
+        self.assertTrue(match)
+        self.assertEqual(match["line"], "1")
+        self.assertEqual(match["column"], "1561")
 
     def test_match_links(self):
         text = """
@@ -101,6 +110,21 @@ class FixerTests(unittest.TestCase):
         self.assertEqual(n, 1)
         self.assertEqual(rv.strip(), text.strip().replace("div", "aside"))
 
+    def test_content_selectors(self):
+        text = """
+        <div class="content">Wikipedia tells us,<br />
+        <blockquote class="uncited">
+        <p>...in 1968, during the Vietnam War, Kaku, who was about to be drafted, joined the United States Army, remaining until 1970. He completed his basic training at Fort Benning, Georgia, and advanced infantry training at Fort Lewis, Washington.[7] However, he was never deployed to Vietnam.
+        </p></blockquote>
+        <a href="https://en.wikipedia.org/wiki/Michio_Kaku" class="postlink">https://en.wikipedia.org/wiki/Michio_Kaku</a>
+        <br /> <br />
+        What Wikipedia explicitly <em class="text-italics">doesn't</em>
+        tell us is <strong class="text-strong">e = MC²</strong></span><br /> <br />r
+        <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fuploads-ssl.webflow.com%2F5c55f4835309587c21460b5f%2F5e211638d2126f2ccbbc1a13_8de37575-p-800.png&amp;f=1&amp;nofb=1" class="postimage" alt="Image">
+        ...only to find in the "end"...<br /> <br /> 1 = Φ(π/4)²<br /> <br /> ...they failed to ask the right <em class="text-italics">question(s)</em>.</div>
+        """
+        root = ET.fromstring(text)
+        self.assertIsInstance(root, ET.Element)
 
 
 def main(args):
