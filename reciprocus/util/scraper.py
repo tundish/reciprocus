@@ -161,6 +161,13 @@ def main(args):
     for path in args.paths:
         logger.info(f"Fixing file", extra=dict(path=path))
         root = fixer(path)
+        tree = ET.ElementTree(root)
+        # TODO: Add MAThML
+        tree.write(
+            sys.stdout, encoding="unicode",
+            xml_declaration=False, default_namespace=None,
+            method="xml", short_empty_elements=False
+        )
 
     logger.info(f"Completed actions", extra=dict(path=""))
     return 0
