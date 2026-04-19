@@ -34,6 +34,11 @@ class Fixer:
     page_matcher = re.compile(r'<div class="pagination".*?/div>', re.M | re.S)
     inner_matcher = re.compile(r'<div class="inner".*?/div>', re.M | re.S)
     content_matcher = re.compile(r'<div class="content".*?/div>', re.M | re.S)
+    attachment_matcher = re.compile(r'<div class="inline-attachment".*?/div>', re.M | re.S)
+
+    @staticmethod
+    def attach_aside(match):
+        return match[0].replace("<div", "<aside").replace("</div>", "</aside>")
 
     def __init__(self):
         self.logger = logging.getLogger("fixer")
@@ -42,20 +47,25 @@ class Fixer:
         text = path.read_text()
         text, n = Fixer.comment_matcher.subn("", text)
         text = text.replace("<br>", "<br />")
+        text, n = Fixer.attachment_matcher.subn(Fixer.attach_aside, text)
         match = Fixer.content_matcher.search(text)
-        self.logger.info(f"{match=}", extra=dict(path=path))
+        self.logger.debug(f"{match=}", extra=dict(path=path))
         try:
-            return ET.fromstring(match[0])
+            text = match[0]
+            return ET.fromstring(text)
+        except TypeError:
+            self.logger.info(f"No content", extra=dict(path=path))
         except ET.ParseError as error:
             pos = int(format(error).split()[-1])
             a, b = max(0, pos - 64), min(pos + 12, len(text))
             self.logger.warning(f"XML error near {text[a: b]}", extra=dict(path=path))
             self.logger.warning(f"Pos {pos:08d}:    " + " " * 57 + "^", extra=dict(path=path))
+            print(text)
 
 
 class FixerTests(unittest.TestCase):
 
-    def test_link_comments(self):
+    def test_match_links(self):
         text = """
             <link rel="alternate" type="application/atom+xml" title="Feed - Topic - Rotational Vibration"
             href="/phpBB3/feed/topic/106"> <link rel="canonical"
@@ -73,6 +83,18 @@ class FixerTests(unittest.TestCase):
         m = Fixer.comment_matcher.search(text)
         self.assertTrue(m)
         self.assertEqual(m[0], text.strip())
+
+    def test_match_attachments(self):
+        text = """
+            <div class="inline-attachment"> <dl class="file"> <dt class="attach-image">
+            <img src="./download/file.php?id=978" class="postimage" alt="invsqrlw.png"
+            onclick="viewableArea(this);" /></dt> <dd>invsqrlw.png (133.56 KiB) Viewed 51840 times</dd> </dl>
+            </div>
+        """
+        rv, n = Fixer.attachment_matcher.subn(Fixer.attach_aside, text)
+        self.assertEqual(n, 1)
+        self.assertEqual(rv.strip(), text.strip().replace("div", "aside"))
+
 
 
 def main(args):
