@@ -33,6 +33,7 @@ class Fixer:
     image_matcher = re.compile(r"<img.*?>", re.M | re.S)
     link_matcher = re.compile(r"<link.*?>", re.M | re.S)
     page_matcher = re.compile(r'<div class="pagination".*?/div>', re.M | re.S)
+    code_matcher = re.compile(r'<div class="codebox".*?/div>', re.M | re.S)
     inner_matcher = re.compile(r'<div class="inner".*?/div>', re.M | re.S)
     content_matcher = re.compile(r'<div class="content".*?/div>', re.M | re.S)
     attachment_matcher = re.compile(r'<div class="inline-attachment".*?/div>', re.M | re.S)
@@ -44,6 +45,10 @@ class Fixer:
         return match[0].replace("<div", "<aside").replace("</div>", "</aside>")
 
     @staticmethod
+    def code_section(match):
+        return match[0].replace("<div", "<section").replace("</div>", "</section>")
+
+    @staticmethod
     def terminate_image(match):
         if "/>" not in match[0]:
             return match[0].replace(">", " />")
@@ -51,7 +56,10 @@ class Fixer:
 
     @staticmethod
     def undiv_blockquote(match):
-        return match[0].replace("<div", "<p").replace("</div>", "</p>")
+        text = match[0]
+        if text.count("<blockquote") > 1:
+            return text
+        return text.replace("<div", "<p").replace("</div>", "</p>")
 
     def __init__(self):
         self.logger = logging.getLogger("fixer")
@@ -61,6 +69,7 @@ class Fixer:
         text, n = Fixer.comment_matcher.subn("", text)
         text = text.replace("<br>", "<br />")
         text, n = Fixer.attachment_matcher.subn(Fixer.attach_aside, text)
+        text, n = Fixer.code_matcher.subn(Fixer.code_section, text)
         text, n = Fixer.blockquote_matcher.subn(Fixer.undiv_blockquote, text)
         text, n = Fixer.image_matcher.subn(Fixer.terminate_image, text)
         match = Fixer.content_matcher.search(text)
