@@ -26,6 +26,8 @@ import sys
 from xml.etree import ElementTree as ET
 import unittest
 
+from math_core import LatexToMathML
+
 
 class Fixer:
     comment_matcher = re.compile(r"<!--.*?-->", re.M | re.S)
@@ -60,6 +62,22 @@ class Fixer:
         if text.count("<blockquote") > 1:
             return text
         return text.replace("<div", "<p").replace("</div>", "</p>")
+
+    @staticmethod
+    def to_html(tree: ET.ElementTree):
+        converter = LatexToMathML()
+        for elem in list(tree.iter()):
+            #print(elem.tag, elem.text, elem.tail, elem.attrib)
+            if elem.tag == "img":
+                formula = elem.attrib.get("alt", "")
+                mathml = converter.convert_with_local_counter(formula, displaystyle=False)
+                elem.append(ET.fromstring(mathml))
+
+        return ET.tostring(
+            tree.getroot(), encoding="unicode",
+            xml_declaration=False, default_namespace=None,
+            method="xml", short_empty_elements=False
+        )
 
     def __init__(self):
         self.logger = logging.getLogger("fixer")
@@ -162,6 +180,9 @@ def main(args):
         logger.info(f"Fixing file", extra=dict(path=path))
         root = fixer(path)
         tree = ET.ElementTree(root)
+        html5 = fixer.to_html(tree)
+        print(html5)
+        continue
         # TODO: Add MAThML
         tree.write(
             sys.stdout, encoding="unicode",
