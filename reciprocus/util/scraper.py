@@ -63,27 +63,12 @@ class Fixer:
             return text
         return text.replace("<div", "<p").replace("</div>", "</p>")
 
-    @staticmethod
-    def to_html(tree: ET.ElementTree):
-        converter = LatexToMathML()
-        for elem in list(tree.iter()):
-            #print(elem.tag, elem.text, elem.tail, elem.attrib)
-            if elem.tag == "img":
-                formula = elem.attrib.get("alt", "")
-                mathml = converter.convert_with_local_counter(formula, displaystyle=False)
-                elem.append(ET.fromstring(mathml))
-
-        return ET.tostring(
-            tree.getroot(), encoding="unicode",
-            xml_declaration=False, default_namespace=None,
-            method="xml", short_empty_elements=False
-        )
-
-    def __init__(self):
+    def __init__(self, path: pathlib.Path):
         self.logger = logging.getLogger("fixer")
+        self.path = path
 
-    def __call__(self, path):
-        text = path.read_text()
+    def __call__(self):
+        text = self.path.read_text()
         text, n = Fixer.comment_matcher.subn("", text)
         text = text.replace("<br>", "<br />")
         text, n = Fixer.attachment_matcher.subn(Fixer.attach_aside, text)
@@ -91,12 +76,12 @@ class Fixer:
         text, n = Fixer.blockquote_matcher.subn(Fixer.undiv_blockquote, text)
         text, n = Fixer.image_matcher.subn(Fixer.terminate_image, text)
         match = Fixer.content_matcher.search(text)
-        self.logger.debug(f"{match=}", extra=dict(path=path))
+        self.logger.debug(f"Match: {match}", extra=dict(path=self.path))
         try:
             text = match[0]
             return ET.fromstring(text)
         except TypeError:
-            self.logger.info(f"No content", extra=dict(path=path))
+            self.logger.info(f"No content", extra=dict(path=self.path))
         except ET.ParseError as error:
             match = Fixer.error_matcher.search(format(error))
             line_nr = int(match["line"]) - 1
@@ -104,9 +89,32 @@ class Fixer:
             line = text.splitlines()[line_nr]
             a = max(0, pos - 36)
             b = min(pos + 8, len(line))
-            self.logger.warning(f"{error}", extra=dict(path=path))
-            self.logger.debug(f"{line[a: b]}", extra=dict(path=path))
-            self.logger.debug(" " * 36 + "^", extra=dict(path=path))
+            self.logger.warning(f"{error}", extra=dict(path=self.path))
+            self.logger.debug(f"{line[a: b]}", extra=dict(path=self.path))
+            self.logger.debug(" " * 36 + "^", extra=dict(path=self.path))
+
+    def to_html(self, tree: ET.ElementTree):
+        converter = LatexToMathML(annotation=True)
+        prior = root = tree.getroot()
+        for elem in list(tree.iter()):
+            if elem.tag == "img":
+                formula = elem.attrib.get("alt", "")
+                self.logger.debug(f"Converting formula {formula}", extra=dict(path=self.path))
+                mathml = converter.convert_with_local_counter(formula, displaystyle=False)
+                insert = ET.fromstring(mathml)
+                prior.append(insert)
+                root.remove(elem)
+                prior = insert
+            else:
+                #TODO: wrap tail text in a paragraph
+                #print(elem.tag, elem.text, elem.tail, elem.attrib)
+                prior = elem
+
+        return ET.tostring(
+            tree.getroot(), encoding="unicode",
+            xml_declaration=False, default_namespace=None,
+            method="html", short_empty_elements=False
+        )
 
 
 class FixerTests(unittest.TestCase):
@@ -175,20 +183,13 @@ def main(args):
     logger = logging.getLogger("scraper")
     args.output.mkdir(parents=True, exist_ok=True)
 
-    fixer = Fixer()
     for path in args.paths:
         logger.info(f"Fixing file", extra=dict(path=path))
-        root = fixer(path)
+        fix = Fixer(path)
+        root = fix()
         tree = ET.ElementTree(root)
-        html5 = fixer.to_html(tree)
+        html5 = fix.to_html(tree)
         print(html5)
-        continue
-        # TODO: Add MAThML
-        tree.write(
-            sys.stdout, encoding="unicode",
-            xml_declaration=False, default_namespace=None,
-            method="xml", short_empty_elements=False
-        )
 
     logger.info(f"Completed actions", extra=dict(path=""))
     return 0
