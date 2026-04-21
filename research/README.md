@@ -16,9 +16,9 @@ I recently opened an account there but found that my ability to participate was 
 The time to moderate and approve my posts ran to several days. So I fear for the future of that site as a nexus of
 research activity.
 
-The user [MWells](https://reciprocal.systems/phpBB3/memberlist.php?mode=viewprofile&u=58) has posted a batch of articles
-explaining his *DFT* system. From my initial reading, this is intended to be fully compatible with Larson. It also
-explicitly incorporates later thinking by Peret, Nehru, Gopi and others.
+The user [MWells](https://reciprocal.systems/phpBB3/memberlist.php?mode=viewprofile&u=58) has posted a batch of
+articles explaining his *DFT* system. From my initial reading, this is intended to be fully compatible with Larson.
+It also explicitly incorporates later thinking by Peret, Nehru, Gopi and others.
 
 I have decided to make this my starting point.
 
@@ -46,7 +46,7 @@ The HTML rendered by the BB forum software is complex and disorderly. I wrote a 
 Ownership
 ---------
 
-I have archived this material to protect against a future possible outage of the Reciprocal Systems forum.
+I have archived this material to protect against a potential future outage of the Reciprocal Systems forum.
 All ownership rests with the original authors. Copyright is theirs and not mine.
 I deeply respect the intellect and the dedication that were necessary to create it.
 I hope my reformatting of the material will be seen as useful but if you are an author who does not wish

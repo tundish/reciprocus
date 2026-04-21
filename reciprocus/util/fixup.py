@@ -19,6 +19,7 @@
 
 
 import argparse
+import json
 import logging
 from pathlib import Path
 import re
@@ -63,12 +64,20 @@ class Fixer:
             return text
         return text.replace("<div", "<p").replace("</div>", "</p>")
 
-    def __init__(self, path: pathlib.Path):
+    def __init__(self, path: pathlib.Path, data: dict = None):
         self.logger = logging.getLogger("fixer")
         self.path = path
+        self.data = data or dict()
 
     def __call__(self, layout: str = None):
         text = self.path.read_text()
+        if self.path.suffix == ".html":
+            return self.threadpost_tree(text)
+        else:
+            self.data.update(json.loads(text))
+            print(self.data)
+
+    def threadpost_tree(self, text: str, layout: str = None):
         text, n = Fixer.comment_matcher.subn("", text)
         text = text.replace("<br>", "<br />")
         text, n = Fixer.attachment_matcher.subn(Fixer.attach_aside, text)
