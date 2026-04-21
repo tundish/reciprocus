@@ -4,9 +4,9 @@ Research
 Sources
 -------
 
-The most recent thinking related to Larson-like theory is not in print.
-It is articulated in back-and-forth conversation in online forums.
-From time to time this will be summarized in the shape of an article or technical note.
+The most recent developments related to Larson theory are not in print.
+They consist of back-and-forth conversations within certain online forums.
+From time to time these will be summarized in the shape of an article or a technical note.
 
 The Reciprocal Systems forum was intended by those who set it up to be the central repository for such material.
 However, by modern standards it is not easy to navigate and hosting is likely under-resourced.
@@ -48,7 +48,7 @@ Ownership
 
 I have archived this material to protect against a potential future outage of the Reciprocal Systems forum.
 All ownership rests with the original authors. Copyright is theirs and not mine.
-I deeply respect the intellect and the dedication that were necessary to create it.
+I respect deeply the intellect and dedication that were necessary to create it.
 I hope my reformatting of the material will be seen as useful but if you are an author who does not wish
 to appear in this repository then please create a GitHub [issue](https://github.com/tundish/reciprocus/issues)
 and I will remove it.
