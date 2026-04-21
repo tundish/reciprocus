@@ -67,7 +67,7 @@ class Fixer:
         self.logger = logging.getLogger("fixer")
         self.path = path
 
-    def __call__(self):
+    def __call__(self, layout: str = None):
         text = self.path.read_text()
         text, n = Fixer.comment_matcher.subn("", text)
         text = text.replace("<br>", "<br />")
@@ -186,10 +186,16 @@ def main(args):
     for path in args.paths:
         logger.info(f"Fixing file", extra=dict(path=path))
         fix = Fixer(path)
-        root = fix()
-        tree = ET.ElementTree(root)
-        html5 = fix.to_html(tree)
-        print(html5)
+        if args.layout == "multi":
+            root = fix(layout=args.layout)
+            try:
+                tree = ET.ElementTree(root)
+                html5 = fix.to_html(tree)
+                print(html5)
+            except (AttributeError, ValueError):
+                logger.error(f"Not fixed.", extra=dict(path=path))
+            except Exception as error:
+                logger.error(error, extra=dict(path=path), exc_info=True)
 
     logger.info(f"Completed actions", extra=dict(path=""))
     return 0
@@ -200,6 +206,7 @@ def parser():
     rv = argparse.ArgumentParser(usage=__doc__, fromfile_prefix_chars="=")
     rv.add_argument("paths", nargs="+", type=Path, help="Specify file paths")
     rv.add_argument("-O", "--output", type=Path, default=default_path, help=f"Specify output directory [{default_path}]")
+    rv.add_argument("--layout", default="multi", choices = ["multi", "single"], help=f"Select page layout")
     rv.add_argument("--debug", action="store_true", default=False, help=f"Display debug logs")
     rv.add_argument("--test", action="store_true", default=False, help=f"Run unit tests")
     rv.convert_arg_line_to_args = lambda x: x.split()

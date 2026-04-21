@@ -28,7 +28,7 @@ Scraping
 For my own safety and comfort I have downloaded the relevant material.
 I used an open source [scraper](https://pypi.org/project/forumscraper/) as follows:
 
-    forumscraper -d DFT  --pages-max 40 https://reciprocal.systems/phpBB3/viewforum.php?f=7
+    forumscraper -d DFT --pages-max 40 https://reciprocal.systems/phpBB3/viewforum.php?f=7
 
 The resulting JSON files have no suffix but that can be remedied like so:
 
@@ -48,7 +48,7 @@ Ownership
 
 I have archived this material to protect against a future possible outage of the Reciprocal Systems forum.
 All ownership rests with the original authors. Copyright is theirs and not mine.
-I deeply respect the intellect and the dedication which were necessary to create it.
+I deeply respect the intellect and the dedication that were necessary to create it.
 I hope my reformatting of the material will be seen as useful but if you are an author who does not wish
 to appear in this repository then please create a GitHub [issue](https://github.com/tundish/reciprocus/issues)
 and I will remove it.
