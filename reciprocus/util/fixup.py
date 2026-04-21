@@ -91,6 +91,7 @@ class Fixer:
         thread_id = self.data.get("id", 0)
         for post in self.data.get("posts"):
             text = post.get("content", "")
+            # text = "\n".join(f"<p>{i}</p>" for i in filter(None, (i.strip() for i in text.split("<br>"))))
             try:
                 ts = datetime.datetime.strptime(post["date"], "%a %b  %d, %Y %I:%M %p")
             except ValueError as error:
@@ -145,26 +146,29 @@ class Fixer:
                 root.remove(elem)
                 prior = insert
             else:
-                #TODO: wrap tail text in a paragraph
-                #print(elem.tag, elem.text, elem.tail, elem.attrib)
                 prior = elem
+                # print(elem.tag, elem.text, elem.tail, elem.attrib)
 
-        yield textwrap.dedent("""
+        breadcrumbs = " ".join([f"<dd>{i}</dd>" for i in metadata["path"]])
+        yield textwrap.dedent(f"""
             <!doctype html>
             <html lang="en">
             <head>
-            <title>a.toml</title>
+            <title>{metadata['title']}</title>
             <meta charset="UTF-8" />
             <meta name="viewport" content="width=device-width, initial-scale=1.0" />
             <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+            <link rel="alternate" href="{metadata['url']}">
             </head>
             <body>
+            <nav><dl>{breadcrumbs}</dl></nav>
+            <h1>{metadata['title']}</h1>
         """).strip()
 
         yield ET.tostring(
             tree.getroot(), encoding="unicode",
             xml_declaration=False, default_namespace=None,
-            method="html", short_empty_elements=False
+            method="xml", short_empty_elements=False
         )
 
         yield textwrap.dedent("""
@@ -245,8 +249,8 @@ def main(args):
         for name, tree, metadata in fix(layout=args.layout):
             try:
                 html5 = "\n".join(fix.to_html(tree, metadata))
-            except (AttributeError, ValueError):
-                logger.error(f"Not fixed.", extra=dict(path=path))
+            except (AttributeError, ValueError) as error:
+                logger.error(f"Not fixed. {error}", extra=dict(path=path))
             except Exception as error:
                 logger.error(error, extra=dict(path=path), exc_info=True)
             else:
