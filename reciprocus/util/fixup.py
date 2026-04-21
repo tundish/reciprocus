@@ -74,12 +74,24 @@ class Fixer:
         if self.path.suffix == ".html":
             page_index = int(self.path.stem.partition("-")[2] or 0)
             self.logger.debug(f"Page index is {page_index}", extra=dict(path=self.path))
-            return self.threadpage_tree(text)
-        else:
-            self.data.update(json.loads(text))
-            print(self.data)
+            section = self.thread_page(text)
+            tree = ET.ElementTree(section)
+            yield Path(self.path.name), tree
+            return
 
-    def threadpage_tree(self, text: str, layout: str = None):
+        self.data.update(json.loads(text))
+        thread_id = self.data.get("id", 0)
+        tree = ET.ElementTree(element=ET.Element("main"))
+        for post in self.data.get("posts"):
+            text = post.get("content", "")
+            section = self.thread_page(text)
+            try:
+                tree.getroot().append(section)
+            except TypeError:
+                self.logger.debug(f"No valid content for post {post['postid']}", extra=dict(path=self.path))
+        yield Path(f"{self.path.name}-{thread_id:03d}.html"), tree
+
+    def thread_page(self, text: str, layout: str = None):
         text, n = Fixer.comment_matcher.subn("", text)
         text = text.replace("<br>", "<br />")
         text, n = Fixer.attachment_matcher.subn(Fixer.attach_aside, text)
@@ -89,7 +101,7 @@ class Fixer:
         match = Fixer.content_matcher.search(text)
         self.logger.debug(f"Match: {match}", extra=dict(path=self.path))
         try:
-            text = match[0]
+            text = match and match[0] or text
             return ET.fromstring(text)
         except TypeError:
             self.logger.info(f"No content", extra=dict(path=self.path))
@@ -197,16 +209,17 @@ def main(args):
     for path in args.paths:
         logger.info(f"Fixing file", extra=dict(path=path))
         fix = Fixer(path)
-        if args.layout == "multi":
-            root = fix(layout=args.layout)
+        for name, tree in fix(layout=args.layout):
             try:
-                tree = ET.ElementTree(root)
                 html5 = fix.to_html(tree)
-                print(html5)
             except (AttributeError, ValueError):
                 logger.error(f"Not fixed.", extra=dict(path=path))
             except Exception as error:
                 logger.error(error, extra=dict(path=path), exc_info=True)
+            else:
+                output = args.output / name
+                output.write_text(html5)
+                logger.info(f"Written", extra=dict(path=path))
 
     logger.info(f"Completed actions", extra=dict(path=""))
     return 0
