@@ -19,11 +19,13 @@
 
 
 import argparse
+import datetime
 import json
 import logging
 from pathlib import Path
 import re
 import sys
+import textwrap
 from xml.etree import ElementTree as ET
 import unittest
 
@@ -89,7 +91,20 @@ class Fixer:
         thread_id = self.data.get("id", 0)
         for post in self.data.get("posts"):
             text = post.get("content", "")
-            section = self.thread_page(f'''<section id="{post['postid']}">\n{text}\n</section>''')
+            try:
+                ts = datetime.datetime.strptime(post["date"], "%a %b  %d, %Y %I:%M %p")
+            except ValueError as error:
+                self.logger.debug(f"Bad timestamp: {error}", extra=dict(path=self.path))
+                ts = ""
+            header = textwrap.dedent(f"""
+            <header>
+            <dl>
+            <dt>User</dt><dd class="user">{post['user']}</dd>
+            <dt>Time</dt><dd class="time">{ts}</dd>
+            </dl>
+            </header>
+            """).strip()
+            section = self.thread_page(f'''<section id="{post['postid']}">\n{header}\n{text}\n</section>''')
             try:
                 tree.getroot().append(section)
             except TypeError:
@@ -101,18 +116,8 @@ class Fixer:
     def thread_page(self, text: str, layout: str = None):
         self.logger.debug(f"Text: {text}", extra=dict(path=self.path))
         text, n = Fixer.comment_matcher.subn("", text)
-        text = text.replace("<br>", "<br />")
-        # text, n = Fixer.attachment_matcher.subn(Fixer.attach_aside, text)
-        # text, n = Fixer.code_matcher.subn(Fixer.code_section, text)
-        # text, n = Fixer.blockquote_matcher.subn(Fixer.undiv_blockquote, text)
         text, n = Fixer.image_matcher.subn(Fixer.terminate_image, text)
-        if self.path.suffix == ".hoax":
-            match = Fixer.content_matcher.search(text)
-            self.logger.debug(f"Match: {match}", extra=dict(path=self.path))
-            try:
-                text = match[0]
-            except TypeError:
-                self.logger.info(f"No content", extra=dict(path=self.path))
+        text = text.replace("<br>", "<br />")
 
         try:
             return ET.fromstring(text)
@@ -144,11 +149,28 @@ class Fixer:
                 #print(elem.tag, elem.text, elem.tail, elem.attrib)
                 prior = elem
 
+        yield textwrap.dedent("""
+            <!doctype html>
+            <html lang="en">
+            <head>
+            <title>a.toml</title>
+            <meta charset="UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+            </head>
+            <body>
+        """).strip()
+
         yield ET.tostring(
             tree.getroot(), encoding="unicode",
             xml_declaration=False, default_namespace=None,
             method="html", short_empty_elements=False
         )
+
+        yield textwrap.dedent("""
+            </body>
+            </html>
+        """).strip()
 
 
 class FixerTests(unittest.TestCase):
@@ -230,7 +252,7 @@ def main(args):
             else:
                 output = args.output / name
                 output.write_text(html5)
-                logger.info(f"Written", extra=dict(path=path))
+                logger.info(f"Written to {output}", extra=dict(path=path))
 
     logger.info(f"Completed actions", extra=dict(path=""))
     return 0
