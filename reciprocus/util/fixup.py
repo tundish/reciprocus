@@ -72,12 +72,14 @@ class Fixer:
     def __call__(self, layout: str = None):
         text = self.path.read_text()
         if self.path.suffix == ".html":
-            return self.threadpost_tree(text)
+            page_index = int(self.path.stem.partition("-")[2] or 0)
+            self.logger.debug(f"Page index is {page_index}", extra=dict(path=self.path))
+            return self.threadpage_tree(text)
         else:
             self.data.update(json.loads(text))
             print(self.data)
 
-    def threadpost_tree(self, text: str, layout: str = None):
+    def threadpage_tree(self, text: str, layout: str = None):
         text, n = Fixer.comment_matcher.subn("", text)
         text = text.replace("<br>", "<br />")
         text, n = Fixer.attachment_matcher.subn(Fixer.attach_aside, text)
