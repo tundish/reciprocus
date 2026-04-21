@@ -49,7 +49,7 @@ class Fixer:
 
     @staticmethod
     def code_section(match):
-        return match[0].replace("<div", "<section").replace("</div>", "</section>")
+        return match[0].replace("<div", "<p").replace("</div>", "</p>")
 
     @staticmethod
     def terminate_image(match):
@@ -71,40 +71,51 @@ class Fixer:
 
     def __call__(self, layout: str = None):
         text = self.path.read_text()
+        tree = ET.ElementTree(element=ET.Element("main"))
+
         if self.path.suffix == ".html":
             page_index = int(self.path.stem.partition("-")[2] or 0)
             self.logger.debug(f"Page index is {page_index}", extra=dict(path=self.path))
-            section = self.thread_page(text)
-            tree = ET.ElementTree(section)
-            yield Path(self.path.name), tree
+            text, n = Fixer.attachment_matcher.subn(Fixer.attach_aside, text)
+            text, n = Fixer.code_matcher.subn(Fixer.code_section, text)
+            text, n = Fixer.blockquote_matcher.subn(Fixer.undiv_blockquote, text)
+            for text in Fixer.content_matcher.findall(text):
+                section = self.thread_page(text)
+                tree.getroot().append(section)
+            yield Path(self.path.name), tree, self.data
             return
 
         self.data.update(json.loads(text))
         thread_id = self.data.get("id", 0)
-        tree = ET.ElementTree(element=ET.Element("main"))
         for post in self.data.get("posts"):
             text = post.get("content", "")
-            section = self.thread_page(text)
+            section = self.thread_page(f'''<section id="{post['postid']}">\n{text}\n</section>''')
             try:
                 tree.getroot().append(section)
             except TypeError:
-                self.logger.debug(f"No valid content for post {post['postid']}", extra=dict(path=self.path))
-        yield Path(f"{self.path.name}-{thread_id:03d}.html"), tree
+                self.logger.debug(
+                    f"No valid content for post {post['postid']}", extra=dict(path=self.path)
+                )
+        yield Path(f"{self.path.stem}.html"), tree, self.data
 
     def thread_page(self, text: str, layout: str = None):
+        self.logger.debug(f"Text: {text}", extra=dict(path=self.path))
         text, n = Fixer.comment_matcher.subn("", text)
         text = text.replace("<br>", "<br />")
-        text, n = Fixer.attachment_matcher.subn(Fixer.attach_aside, text)
-        text, n = Fixer.code_matcher.subn(Fixer.code_section, text)
-        text, n = Fixer.blockquote_matcher.subn(Fixer.undiv_blockquote, text)
+        # text, n = Fixer.attachment_matcher.subn(Fixer.attach_aside, text)
+        # text, n = Fixer.code_matcher.subn(Fixer.code_section, text)
+        # text, n = Fixer.blockquote_matcher.subn(Fixer.undiv_blockquote, text)
         text, n = Fixer.image_matcher.subn(Fixer.terminate_image, text)
-        match = Fixer.content_matcher.search(text)
-        self.logger.debug(f"Match: {match}", extra=dict(path=self.path))
+        if self.path.suffix == ".hoax":
+            match = Fixer.content_matcher.search(text)
+            self.logger.debug(f"Match: {match}", extra=dict(path=self.path))
+            try:
+                text = match[0]
+            except TypeError:
+                self.logger.info(f"No content", extra=dict(path=self.path))
+
         try:
-            text = match and match[0] or text
             return ET.fromstring(text)
-        except TypeError:
-            self.logger.info(f"No content", extra=dict(path=self.path))
         except ET.ParseError as error:
             match = Fixer.error_matcher.search(format(error))
             line_nr = int(match["line"]) - 1
@@ -116,7 +127,7 @@ class Fixer:
             self.logger.debug(f"{line[a: b]}", extra=dict(path=self.path))
             self.logger.debug(" " * 36 + "^", extra=dict(path=self.path))
 
-    def to_html(self, tree: ET.ElementTree):
+    def to_html(self, tree: ET.ElementTree, metadata: dict = None):
         converter = LatexToMathML(annotation=True)
         prior = root = tree.getroot()
         for elem in list(tree.iter()):
@@ -133,7 +144,7 @@ class Fixer:
                 #print(elem.tag, elem.text, elem.tail, elem.attrib)
                 prior = elem
 
-        return ET.tostring(
+        yield ET.tostring(
             tree.getroot(), encoding="unicode",
             xml_declaration=False, default_namespace=None,
             method="html", short_empty_elements=False
@@ -209,9 +220,9 @@ def main(args):
     for path in args.paths:
         logger.info(f"Fixing file", extra=dict(path=path))
         fix = Fixer(path)
-        for name, tree in fix(layout=args.layout):
+        for name, tree, metadata in fix(layout=args.layout):
             try:
-                html5 = fix.to_html(tree)
+                html5 = "\n".join(fix.to_html(tree, metadata))
             except (AttributeError, ValueError):
                 logger.error(f"Not fixed.", extra=dict(path=path))
             except Exception as error:
