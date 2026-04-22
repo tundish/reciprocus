@@ -192,7 +192,7 @@ class Fixer:
         yield ET.tostring(
             tree.getroot(), encoding="unicode",
             xml_declaration=False, default_namespace=None,
-            method="xml", short_empty_elements=False
+            method="html", short_empty_elements=False
         )
 
         yield textwrap.dedent("""
