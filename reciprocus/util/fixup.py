@@ -136,15 +136,18 @@ class Fixer:
     def to_html(self, tree: ET.ElementTree, metadata: dict = None):
         converter = LatexToMathML(annotation=True)
         prior = root = tree.getroot()
+        parents = {c: p for p in tree.iter() for c in p}
         for elem in list(tree.iter()):
             if elem.tag == "img":
                 formula = elem.attrib.get("alt", "")
-                self.logger.debug(f"Converting formula {formula}", extra=dict(path=self.path))
-                mathml = converter.convert_with_local_counter(formula, displaystyle=False)
-                insert = ET.fromstring(mathml)
-                prior.append(insert)
-                root.remove(elem)
-                prior = insert
+                if formula.lower() != "image":
+                    self.logger.debug(f"Converting formula {formula}", extra=dict(path=self.path))
+                    mathml = converter.convert_with_local_counter(formula, displaystyle=False)
+                    insert = ET.fromstring(mathml)
+                    prior.append(insert)
+                    parent = parents[elem]
+                    parent.remove(elem)
+                    prior = insert
             else:
                 prior = elem
                 # print(elem.tag, elem.text, elem.tail, elem.attrib)
