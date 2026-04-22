@@ -66,6 +66,14 @@ class Fixer:
             return text
         return text.replace("<div", "<p").replace("</div>", "</p>")
 
+    @staticmethod
+    def fix_math(text: str):
+        """
+        For command coverage see:
+        https://github.com/tmke8/math-core/issues/155
+        """
+        return text.removeprefix(r"\(").removesuffix(r"\)").replace(r"\!", "")
+
     def __init__(self, path: pathlib.Path, data: dict = None):
         self.logger = logging.getLogger("fixer")
         self.path = path
@@ -139,7 +147,7 @@ class Fixer:
         parents = {c: p for p in tree.iter() for c in p}
         for elem in list(tree.iter()):
             if elem.tag == "img":
-                formula = elem.attrib.get("alt", "")
+                formula = self.fix_math(elem.attrib.get("alt", ""))
                 if formula.lower() != "image":
                     self.logger.debug(f"Converting formula {formula}", extra=dict(path=self.path))
                     mathml = converter.convert_with_local_counter(formula, displaystyle=False)
@@ -235,6 +243,19 @@ class FixerTests(unittest.TestCase):
         text, n = Fixer.image_matcher.subn(Fixer.terminate_image, text)
         root = ET.fromstring(text)
         self.assertIsInstance(root, ET.Element)
+
+    def test_fix_math(self):
+        converter = LatexToMathML()
+        for text in [
+            r"\lambda" , r"\sigma(\lambda)" , r"\mathbb{R}^{3}_{S}" , r"\mathbb{R}^{3}_{T}" ,
+            r"\(\mathbb{R}^{3}_{T}\)",
+            r"\bigl\| R_{S}(\lambda) \bigr\|^{2} + \bigl\| R_{T}(\lambda) \bigr\|^{2} = C^{2}\!\bigl(\sigma(\lambda)\bigr)",
+        ]:
+            with self.subTest(text=text):
+                formula = Fixer.fix_math(text)
+                self.assertTrue(formula)
+                mathml = converter.convert_with_local_counter(formula, displaystyle=False)
+                self.assertTrue(mathml)
 
 
 def main(args):
