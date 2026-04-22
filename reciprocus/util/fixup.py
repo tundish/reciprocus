@@ -316,9 +316,12 @@ def main(args):
             target = sorted(Fixer.Index.lookup.values())[pos][1] if pos >= 0 else list(pages)[n - 1]
             html5 = html5.replace("</head>", f'<link rel="prev" href="{target}">\n</head>')
             html5 = html5.replace("</dl></nav>", f'<dt>Back</dt><dd class="back"><a href="{target}">{target}</a></dd></dl></nav>')
-        if n < len(pages) - 1:
-            html5 = html5.replace("</head>", f'<link rel="next" href="{list(pages)[n + 1]}">\n</head>')
-            html5 = html5.replace("</dl></nav>", f'<dt>Next</dt><dd class="next"><a href="{list(pages)[n + 1]}">{list(pages)[n + 1]}</a></dd></dl></nav>')
+
+        pos = list(lookup).index(name) + 1 if name in lookup else -1
+        if n < len(pages) - 1 or pos < len(lookup) - 1:
+            target = sorted(Fixer.Index.lookup.values())[pos][1] if pos < len(lookup) - 1 else list(pages)[n + 1]
+            html5 = html5.replace("</head>", f'<link rel="next" href="{target}">\n</head>')
+            html5 = html5.replace("</dl></nav>", f'<dt>Next</dt><dd class="next"><a href="{target}">{target}</a></dd></dl></nav>')
 
         for k, (i, v) in Fixer.Index.lookup.items():
             html5 = html5.replace(f"{k} ", f'<a href="{v}">{k}</a> ')
