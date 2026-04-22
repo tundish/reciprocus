@@ -313,10 +313,10 @@ def main(args):
 
     for n, (name, (path, html5)) in enumerate(pages.items()):
         if n > 0:
-            link = ""
+            html5 = html5.replace("</head>", f'<link rel="prev" href="{list(pages)[n - 1]}">\n</head>')
             html5 = html5.replace("</dl></nav>", f'<dt>Back</dt><dd class="back"><a href="{list(pages)[n - 1]}">{list(pages)[n - 1]}</a></dd></dl></nav>')
         if n < len(pages) - 1:
-            link = ""
+            html5 = html5.replace("</head>", f'<link rel="next" href="{list(pages)[n + 1]}">\n</head>')
             html5 = html5.replace("</dl></nav>", f'<dt>Next</dt><dd class="next"><a href="{list(pages)[n + 1]}">{list(pages)[n + 1]}</a></dd></dl></nav>')
         output = args.output / name
         output.write_text(html5)
