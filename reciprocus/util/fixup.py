@@ -51,7 +51,7 @@ class Fixer:
 
     @staticmethod
     def code_section(match):
-        return match[0].replace("<div", "<p").replace("</div>", "</p>")
+        return match[0].replace("<div", "<samp").replace("</div>", "</samp>")
 
     @staticmethod
     def terminate_image(match):
