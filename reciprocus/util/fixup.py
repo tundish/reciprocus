@@ -77,6 +77,7 @@ class Fixer:
             r"\!": "",
             r"\abs": r"\lvert",
             r"\huge": "",
+            r"\leadsto": r"\Rarr",
         }
         if text.startswith(r"\(") and text.endswith(r"\)"):
             text = text.removeprefix(r"\(").removesuffix(r"\)")
