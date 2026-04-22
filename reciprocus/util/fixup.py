@@ -50,9 +50,6 @@ class Fixer:
         capture = [
             re.compile("DFT-[\d]+[a-z]{0,1}")
         ]
-        tags = {
-            "DFT": None
-        }
 
     @staticmethod
     def attach_aside(match):
@@ -318,6 +315,9 @@ def main(args):
         if n < len(pages) - 1:
             html5 = html5.replace("</head>", f'<link rel="next" href="{list(pages)[n + 1]}">\n</head>')
             html5 = html5.replace("</dl></nav>", f'<dt>Next</dt><dd class="next"><a href="{list(pages)[n + 1]}">{list(pages)[n + 1]}</a></dd></dl></nav>')
+
+        for k, v in Fixer.Index.lookup.items():
+            html5 = html5.replace(f"{k} ", f'<a href="{v}">{k}</a> ')
         output = args.output / name
         output.write_text(html5)
         logger.info(f"Written to {output}", extra=dict(path=path))
