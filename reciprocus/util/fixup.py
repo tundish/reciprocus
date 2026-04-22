@@ -45,6 +45,15 @@ class Fixer:
     blockquote_matcher = re.compile(r'<blockquote.*?/blockquote>', re.M | re.S)
     error_matcher = re.compile(r':\s+line\s+(?P<line>\d+)[, ]*column\s+(?P<column>\d+)\s*', re.M | re.S)
 
+    class Index:
+        lookup = {}
+        capture = [
+            re.compile("DFT-[\d]+[a-z]{0,1}")
+        ]
+        tags = {
+            "DFT": None
+        }
+
     @staticmethod
     def attach_aside(match):
         return match[0].replace("<div", "<aside").replace("</div>", "</aside>")
@@ -109,6 +118,12 @@ class Fixer:
             return
 
         self.data.update(json.loads(text))
+        name = f"{self.path.stem}.html"
+        for regex in self.Index.capture:
+            match = regex.search(self.data["title"])
+            if match:
+                self.Index.lookup[match[0]] = name
+
         thread_id = self.data.get("id", 0)
         for post in self.data.get("posts"):
             text = post.get("content", "")
@@ -133,7 +148,7 @@ class Fixer:
                 self.logger.debug(
                     f"No valid content for post {post['postid']}", extra=dict(path=self.path)
                 )
-        yield Path(f"{self.path.stem}.html"), tree, self.data
+        yield Path(name), tree, self.data
 
     def thread_page(self, text: str, layout: str = None):
         self.logger.debug(f"Text: {text}", extra=dict(path=self.path))
@@ -281,6 +296,7 @@ def main(args):
     logger = logging.getLogger("scraper")
     args.output.mkdir(parents=True, exist_ok=True)
 
+    pages = {}
     for path in args.paths:
         logger.info(f"Fixing file", extra=dict(path=path))
         fix = Fixer(path)
@@ -292,11 +308,16 @@ def main(args):
             except Exception as error:
                 logger.error(error, extra=dict(path=path), exc_info=True)
             else:
-                output = args.output / name
-                output.write_text(html5)
-                logger.info(f"Written to {output}", extra=dict(path=path))
+                pages[name] = (path, html5)
+                logger.info(f"Page created ({len(html5)} chars)", extra=dict(path=path))
+
+    for name, (path, html5) in pages.items():
+        output = args.output / name
+        output.write_text(html5)
+        logger.info(f"Written to {output}", extra=dict(path=path))
 
     logger.info(f"Completed actions", extra=dict(path=""))
+    print(Fixer.Index.lookup)
     return 0
 
 
