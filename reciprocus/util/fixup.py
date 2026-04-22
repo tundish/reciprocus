@@ -22,6 +22,7 @@ import argparse
 import datetime
 import json
 import logging
+import operator
 from pathlib import Path
 import re
 import sys
@@ -48,7 +49,7 @@ class Fixer:
     class Index:
         lookup = {}
         capture = [
-            re.compile("DFT-[\d]+[a-z]{0,1}")
+            re.compile("DFT-([\d]+)([a-z]{0,1})")
         ]
 
     @staticmethod
@@ -119,7 +120,8 @@ class Fixer:
         for regex in self.Index.capture:
             match = regex.search(self.data["title"])
             if match:
-                self.Index.lookup[match[0]] = name
+                index = (int(match[1]), match[2] or "0")
+                self.Index.lookup[match[0]] = (index, name)
 
         thread_id = self.data.get("id", 0)
         for post in self.data.get("posts"):
@@ -183,7 +185,6 @@ class Fixer:
                     prior = insert
             else:
                 prior = elem
-                # print(elem.tag, elem.text, elem.tail, elem.attrib)
 
         breadcrumbs = " ".join([f"<dd>{i}</dd>" for i in metadata["path"]])
         yield textwrap.dedent(f"""
@@ -305,25 +306,27 @@ def main(args):
             except Exception as error:
                 logger.error(error, extra=dict(path=path), exc_info=True)
             else:
-                pages[name] = (path, html5)
+                pages[name] = (path, metadata["title"], html5)
                 logger.info(f"Page created ({len(html5)} chars)", extra=dict(path=path))
 
-    for n, (name, (path, html5)) in enumerate(pages.items()):
-        if n > 0:
-            html5 = html5.replace("</head>", f'<link rel="prev" href="{list(pages)[n - 1]}">\n</head>')
-            html5 = html5.replace("</dl></nav>", f'<dt>Back</dt><dd class="back"><a href="{list(pages)[n - 1]}">{list(pages)[n - 1]}</a></dd></dl></nav>')
+    lookup = {Path(v): k for k, (i, v) in sorted(Fixer.Index.lookup.items(), key=operator.itemgetter(1))}
+    for n, (name, (path, title, html5)) in enumerate(pages.items()):
+        pos = list(lookup).index(name) - 1 if name in lookup else -1
+        if n > 0 or pos >= 0:
+            target = sorted(Fixer.Index.lookup.values())[pos][1] if pos >= 0 else list(pages)[n - 1]
+            html5 = html5.replace("</head>", f'<link rel="prev" href="{target}">\n</head>')
+            html5 = html5.replace("</dl></nav>", f'<dt>Back</dt><dd class="back"><a href="{target}">{target}</a></dd></dl></nav>')
         if n < len(pages) - 1:
             html5 = html5.replace("</head>", f'<link rel="next" href="{list(pages)[n + 1]}">\n</head>')
             html5 = html5.replace("</dl></nav>", f'<dt>Next</dt><dd class="next"><a href="{list(pages)[n + 1]}">{list(pages)[n + 1]}</a></dd></dl></nav>')
 
-        for k, v in Fixer.Index.lookup.items():
+        for k, (i, v) in Fixer.Index.lookup.items():
             html5 = html5.replace(f"{k} ", f'<a href="{v}">{k}</a> ')
         output = args.output / name
         output.write_text(html5)
         logger.info(f"Written to {output}", extra=dict(path=path))
 
     logger.info(f"Completed actions", extra=dict(path=""))
-    print(Fixer.Index.lookup)
     return 0
 
 
