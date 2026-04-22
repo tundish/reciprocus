@@ -49,7 +49,7 @@ class Fixer:
     class Index:
         lookup = {}
         capture = [
-            re.compile("DFT-([\d]+)([a-z]{0,1})")
+            re.compile(r"DFT-([\d]+)([a-z]{0,1})")
         ]
 
     @staticmethod
@@ -294,8 +294,14 @@ def main(args):
     logger = logging.getLogger("scraper")
     args.output.mkdir(parents=True, exist_ok=True)
 
+    def by_the_numbers(path):
+        try:
+            return int(path.stem)
+        except ValueError:
+            return path.name
+
     pages = {}
-    for path in args.paths:
+    for path in sorted(args.paths, key=by_the_numbers):
         logger.info(f"Fixing file", extra=dict(path=path))
         fix = Fixer(path)
         for name, tree, metadata in fix(layout=args.layout):
@@ -318,15 +324,15 @@ def main(args):
             html5 = html5.replace("</dl></nav>", f'<dt>Back</dt><dd class="back"><a href="{target}">{target}</a></dd></dl></nav>')
 
         pos = list(lookup).index(name) + 1 if name in lookup else -1
-        if n < len(pages) - 1 or pos < len(lookup) - 1:
-            target = sorted(Fixer.Index.lookup.values())[pos][1] if pos < len(lookup) - 1 else list(pages)[n + 1]
+        if n < len(pages) - 1 or 0 <= pos < len(lookup) - 1:
+            target = sorted(Fixer.Index.lookup.values())[pos][1] if 0 <= pos < len(lookup) - 1 else list(pages)[n + 1]
             html5 = html5.replace("</head>", f'<link rel="next" href="{target}">\n</head>')
             html5 = html5.replace("</dl></nav>", f'<dt>Next</dt><dd class="next"><a href="{target}">{target}</a></dd></dl></nav>')
 
         for k, (i, v) in Fixer.Index.lookup.items():
             html5 = html5.replace(f"{k} ", f'<a href="{v}">{k}</a> ')
         output = args.output / name
-        output.write_text(html5)
+        output.write_text(html5, encoding="utf8")
         logger.info(f"Written to {output}", extra=dict(path=path))
 
     logger.info(f"Completed actions", extra=dict(path=""))
