@@ -4,7 +4,7 @@ Research
 Sources
 -------
 
-The most recent developments related to Larson theory are not in print.
+The most recent developments related to Larsonian theory are not in print.
 They consist of back-and-forth conversations within certain online forums.
 From time to time these will be summarized in the shape of an article or a technical note.
 
