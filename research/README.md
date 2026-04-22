@@ -41,7 +41,16 @@ Formatting
 ----------
 
 The HTML rendered by the BB forum software is complex and disorderly. I wrote a script to clean it up.
+You can run this script as follows:
 
+    python3 -m reciprocus.util.fixup research/DFT/*.json
+
+New HTML5 files are generated in an output directory. They have a number of useful features:
+
++ Navigation links correctly ordered by DFT article number.
++ Inline references to DFT articles appear as hyperlinks.
++ Better page structure (flat sections rather than deeply nested divs).
++ LaTeX rendered images are replaced by MathML formulae.
 
 Ownership
 ---------
