@@ -72,7 +72,19 @@ class Fixer:
         For command coverage see:
         https://github.com/tmke8/math-core/issues/155
         """
-        return text.removeprefix(r"\(").removesuffix(r"\)").replace(r"\!", "")
+        text = text.strip()
+        replace = {
+            r"\!": "",
+            r"\abs": r"\lvert",
+            r"\huge": "",
+        }
+        if text.startswith(r"\(") and text.endswith(r"\)"):
+            text = text.removeprefix(r"\(").removesuffix(r"\)")
+        for k, v in replace.items():
+            text = text.replace(k, v)
+        if text.endswith(r"\right"):
+            text = f"{text})"
+        return text
 
     def __init__(self, path: pathlib.Path, data: dict = None):
         self.logger = logging.getLogger("fixer")
@@ -250,6 +262,7 @@ class FixerTests(unittest.TestCase):
             r"\lambda" , r"\sigma(\lambda)" , r"\mathbb{R}^{3}_{S}" , r"\mathbb{R}^{3}_{T}" ,
             r"\(\mathbb{R}^{3}_{T}\)",
             r"\bigl\| R_{S}(\lambda) \bigr\|^{2} + \bigl\| R_{T}(\lambda) \bigr\|^{2} = C^{2}\!\bigl(\sigma(\lambda)\bigr)",
+            r"\dot{\Theta}(\lambda) = \left(\dot{\theta}^1(\lambda),\ \dot{\theta}^2(\lambda),\ \dot{\theta}^3(\lambda)\right",
         ]:
             with self.subTest(text=text):
                 formula = Fixer.fix_math(text)
