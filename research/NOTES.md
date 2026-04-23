@@ -61,3 +61,8 @@ Quaternions
 (Rodrigues)[https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula]
 (Python array API)[https://data-apis.org/array-api/latest/index.html]
 (Orix)[https://github.com/pyxem/orix]
+
+Compact Fibre Formulae
+======================
+
+(Summary of Links)[https://reciprocal.systems/phpBB3/viewtopic.php?t=860]
