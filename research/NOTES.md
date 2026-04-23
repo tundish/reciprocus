@@ -66,3 +66,4 @@ Compact Fibre Formulae
 ======================
 
 (Summary of Links)[https://reciprocal.systems/phpBB3/viewtopic.php?t=860]
+(SPARC data set)[https://astroweb.cwru.edu/SPARC/]
