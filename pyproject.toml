@@ -24,6 +24,7 @@ dependencies = [
 [project.optional-dependencies]
 test = [
     "quaternionic",
+    "tensora",
 ]
 search = [
     "forumscraper",
