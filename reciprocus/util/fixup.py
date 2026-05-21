@@ -94,7 +94,7 @@ class Fixer:
             text = f"{text})"
         return text
 
-    def __init__(self, path: pathlib.Path, data: dict = None):
+    def __init__(self, path: Path, data: dict = None):
         self.logger = logging.getLogger("fixer")
         self.path = path
         self.data = data or dict()
@@ -291,7 +291,7 @@ def main(args):
         level=level, style="{",
         format="{asctime}|{levelname:>8}| {name:<16}| {path!s:<36}| {message}",
     )
-    logger = logging.getLogger("scraper")
+    logger = logging.getLogger("fixup")
     args.output.mkdir(parents=True, exist_ok=True)
 
     def by_the_numbers(path):
